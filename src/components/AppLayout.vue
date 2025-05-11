@@ -4,7 +4,7 @@
   import UserInfo from "./UserInfo.vue";
   import LeftGuider from "./LeftGuider.vue";
   import GroupList from "./GroupList.vue";
-
+  import OperationBar from "./OperationBar.vue";
   const order = shallowRef(0)
 
   // 模拟数据数组
@@ -38,30 +38,28 @@
       <GroupList />
     </v-navigation-drawer>
 
-    <v-app-bar
-        :order="order"
-        color="grey-lighten-2"
-        title="BBSTest"
-        flat
-        class="position-fixed top-0 right-0 z-20"
-    >
+<!--    上侧导航-->
+    <v-app-bar :order="order" color="grey-lighten-2" title="BBSTest" flat class="flex position-fixed top-0 right-0 z-20">
       <template v-slot:append>
         <v-btn value="recent">
-          <v-icon>mdi-history</v-icon>
-
-          <span>Recent</span>
+            <v-icon>mdi-history</v-icon>
         </v-btn>
 
         <v-btn value="favorites">
-          <v-icon>mdi-heart</v-icon>
-
-          <span>Favorites</span>
+            <v-icon class="">mdi-heart</v-icon>
         </v-btn>
 
         <v-btn value="nearby">
-          <v-icon>mdi-map-marker</v-icon>
-
-          <span>Nearby</span>
+          <v-badge
+              :content="1"
+              :absolute="true"
+              :right="0"
+              :top="0"
+              color="red"
+              rounded
+          >
+            <v-icon class="h-6 w-6 text-gray-600">mdi-bell-outline</v-icon>
+          </v-badge>
         </v-btn>
 <!--        <v-switch-->
 <!--            v-model="order"-->
@@ -75,7 +73,9 @@
       </template>
     </v-app-bar>
 
+<!--    主界面-->
     <v-main class="flex-column align-center justify-center" height="300">
+      <OperationBar />
       <v-container>
 <!--        <v-sheet-->
 <!--            border="dashed md"-->

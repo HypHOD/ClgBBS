@@ -10,7 +10,7 @@ const groups = ref([
 </script>
 
 <template>
-  <v-card>
+  <v-card class="mt-1">
     <v-card-title>
       <h2>Group List</h2>
     </v-card-title>
@@ -18,19 +18,12 @@ const groups = ref([
       <v-layout>
         <v-container class="">
           <v-row>
-            <v-col
-                v-for="(group, index) in groups"
-                :key="index"
-                cols="12"
-                xs="12"
-
-
-            >
+            <v-col v-for="(group, index) in groups" :key="index" cols="12" xs="12">
               <v-card class="elevation-2">
                 <v-card-title>{{ group.name }}</v-card-title>
                 <v-card-actions justify="end">
                   <v-btn icon color="primary">
-                    <v-icon>mdi-more-vert</v-icon>
+                    <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </v-card-actions>
               </v-card>
