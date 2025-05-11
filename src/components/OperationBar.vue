@@ -23,7 +23,6 @@
         </v-chip>
       </template>
     </v-combobox>
-
   </v-container>
 </template>
 

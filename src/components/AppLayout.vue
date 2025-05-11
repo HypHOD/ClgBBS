@@ -1,17 +1,38 @@
 <script setup lang="ts">
-  import { shallowRef, ref } from 'vue'
-  import TextTest from "./TextTest.vue";
-  import UserInfo from "./UserInfo.vue";
-  import LeftGuider from "./LeftGuider.vue";
-  import GroupList from "./GroupList.vue";
-  import OperationBar from "./OperationBar.vue";
-  const order = shallowRef(0)
+import {reactive, ref, shallowRef} from 'vue'
+import TextTest from "./TextTest.vue";
+import UserInfo from "./UserInfo.vue";
+import LeftGuider from "./LeftGuider.vue";
+import GroupList from "./GroupList.vue";
+import OperationBar from "./OperationBar.vue";
+import axios from 'axios';
+
+
+
+//   const fetchPosts = async () => {
+//   try {
+//     const response = await axios.get('API_URL');
+//     const data = response.data;
+//
+//     // 使用 reactive 来管理帖子数据
+//     return reactive(data);
+//   } catch (error) {
+//     console.error('Error fetching posts:', error);
+//     return [];
+//   }
+// };
+//
+// // 调用函数获取帖子数据
+// const posts = await fetchPosts();
+
+const order = shallowRef(0)
 
   // 模拟数据数组
   const items = ref([
-    { id: 1, content: 'Item 1' },
-    { id: 2, content: 'Item 2' },
-    { id: 3, content: 'Item 3' },
+    { id: 1, content: 'Text' },
+    { id: 2, content: 'Image' },
+    { id: 3, content: 'Video' },
+    { id: 4, content: 'https://testURL.com' },
   ]);
 
   // 模拟每次加载的数据数量
@@ -76,15 +97,6 @@
 <!--    主界面-->
     <v-main class="flex-column align-center justify-center" height="300">
       <OperationBar />
-      <v-container>
-<!--        <v-sheet-->
-<!--            border="dashed md"-->
-<!--            color="surface-light"-->
-<!--            height="200"-->
-<!--            rounded="lg"-->
-<!--            width="100%"-->
-<!--        ><TextTest /></v-sheet>-->
-      </v-container>
 
       <v-infinite-scroll  @load="loadMore" :items="items" >
         <v-container v-for="(item, index) in items" :key="index" :item="item">
@@ -94,7 +106,7 @@
               height="200"
               rounded="lg"
               width="100%"
-          ><TextTest /></v-sheet>
+          ><TextTest :index="index" :item="item"/></v-sheet>
         </v-container>
       </v-infinite-scroll>
 
