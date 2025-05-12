@@ -3,7 +3,8 @@
 </script>
 
 <template>
-  <AppLayout />
+<!--  <AppLayout />-->
+  <router-view></router-view>
 
 
 </template>
