@@ -1,5 +1,4 @@
 <script setup lang="ts" name="CreateAccount">
-import { ref } from 'vue'
 import { ChevronDownIcon } from '@heroicons/vue/16/solid'
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 </script>

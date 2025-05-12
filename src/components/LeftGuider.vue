@@ -4,7 +4,7 @@
 
 <template>
 
-  <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1">
+  <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 z-10">
     <v-layout>
       <v-navigation-drawer floating permanent>
         <v-list density="compact" nav>
