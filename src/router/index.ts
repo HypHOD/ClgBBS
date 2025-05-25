@@ -23,6 +23,21 @@ const router = createRouter({
             path: '/create-account',
             name: 'CreateAccount',
             component: () => import('../components/CreateAccount.vue')
+        },
+        {
+            path:'/create-account-success',
+            name: 'CreateAccountSuccess',
+            component: () => import('../components/CreateAccountSuccess.vue')
+        },
+        {
+            path: '/404',
+            name: 'NotFound',
+            component: () => import('../components/NotFound.vue')
+        },
+        {
+            path: '/personal-homepage',
+            name: 'PersonalHomePage',
+            component: () => import('../components/PersonalHomePage.vue')
         }
 
     ]

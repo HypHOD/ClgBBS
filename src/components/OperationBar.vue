@@ -21,7 +21,7 @@
 </script>
 
 <template>
-  <v-breadcrumbs :items="breadcrumbs" bg-color="primary">
+  <v-breadcrumbs :items="breadcrumbs" bg-color="primary" class="flex position-relative top-0">
     <template v-slot:prepend>
       <v-icon icon="$vuetify" size="small"></v-icon>
     </template>
