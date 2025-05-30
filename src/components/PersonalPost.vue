@@ -10,14 +10,13 @@ setTimeout(() => {
 }, 1000);
 
 defineProps(['index','item'])
-
 </script>
 
 <template>
   <v-container class="d-flex flex-col fill-width">
     <v-chip
         :class="{ 'text-field-blur': isBlurred }"
-        class="height-50"
+        class="height-40"
     >{{item.content}}</v-chip>
   </v-container>
 </template>

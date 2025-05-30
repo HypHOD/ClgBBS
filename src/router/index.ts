@@ -38,6 +38,11 @@ const router = createRouter({
             path: '/personal-homepage',
             name: 'PersonalHomePage',
             component: () => import('../components/PersonalHomePage.vue')
+        },
+        {
+            path: '/test-page',
+            name: 'TestPage',
+            component: () => import('../components/TestPage.vue')
         }
 
     ]
