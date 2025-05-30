@@ -3,10 +3,20 @@ import PersonalPost from "@/components/PersonalPost.vue";
 import TextTest from "@/components/TextTest.vue";
 import {ref, onMounted, shallowRef} from 'vue'
 
-const ID = ref(123)
+const UserPosts = fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(data => data.slice(0, 10))
+    .catch(error => console.error(error));
 
 // 状态跟踪当前选中的组件
 const currentComponent = ref('')
+
+// 模拟分页
+const page = ref(1)
+const pages_number = ref(10)
+// const pages_number = computed(() => {
+//   return Math.ceil(UserPosts.length / itemsPerLoad)
+// })
 
 // 预定义组件映射
 const componentsMap = {
@@ -14,21 +24,21 @@ const componentsMap = {
   'TextTest': TextTest
 }
 
-// 组件挂载后默认显示第一个组件
-onMounted(() => {
-  currentComponent.value = 'PersonalPost'
-})
-
-// 处理按钮点击并更新当前组件
-const handleClick = (componentName: string) => {
-  if (componentsMap[componentName]) {
-    currentComponent.value = componentName
-  } else {
-    console.error('未找到组件:', componentName)
-  }
-}
-
-const order = shallowRef(0)
+// // 组件挂载后默认显示第一个组件
+// onMounted(() => {
+//   currentComponent.value = 'PersonalPost'
+// })
+//
+// // 处理按钮点击并更新当前组件
+// const handleClick = (componentName: string) => {
+//   if (componentsMap[componentName]) {
+//     currentComponent.value = componentName
+//   } else {
+//     console.error('未找到组件:', componentName)
+//   }
+// }
+//
+// const order = shallowRef(0)
 
 // 模拟数据数组
 const items = ref([
@@ -56,9 +66,7 @@ const loadMore = () => {
   }, 1000);
 };
 
-// 模拟分页
-const page = ref(1)
-const pages_number = ref(10)
+
 </script>
 
 <template>
@@ -131,6 +139,7 @@ const pages_number = ref(10)
         <v-pagination
             v-model="page"
             :length="pages_number"
+            :total-visible="4"
             class="my-4"
         ></v-pagination>
 

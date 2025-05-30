@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const postContent = ref('');
-const isBlurred = ref(false);
 const displayText = ref('');
+const isBlurred = ref(false);
 
 setTimeout(() => {
   postContent.value = '这是一个很长的服务器帖子内容示例，包含很多信息...';
@@ -35,4 +35,6 @@ defineProps(['index','item'])
   .text-field-blur {
     filter: blur(10px);
   }
+
+
 </style>

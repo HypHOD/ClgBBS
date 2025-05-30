@@ -29,10 +29,10 @@ const order = shallowRef(0)
 
   // 模拟数据数组
   const items = ref([
-    { id: 1, content: 'Text' },
-    { id: 2, content: 'Image' },
-    { id: 3, content: 'Video' },
-    { id: 4, content: 'https://testURL.com' },
+    { id: 1, content: 'Text', isBlurred: false },
+    { id: 2, content: 'Image', isBlurred: false},
+    { id: 3, content: 'Video', isBlurred: false },
+    { id: 4, content: 'https://testURL.com', isBlurred: true },
   ]);
 
   // 模拟每次加载的数据数量
@@ -49,6 +49,15 @@ const order = shallowRef(0)
       items.value = [...items.value, ...newItems];
     }, 1000);
   };
+
+
+  const handleClick = (item) => {
+    console.log(item)
+    // 帖子详细页显示在页面上层
+    // 显示帖子详细页组件
+    // 传递帖子数据给帖子详细页组件
+    // 关闭抽屉
+  }
 </script>
 
 <template>
@@ -106,7 +115,9 @@ const order = shallowRef(0)
               height="200"
               rounded="lg"
               width="100%"
-          ><TextTest :index="index" :item="item"/></v-sheet>
+              class="hover-effect"
+              @click="handleClick(item)"
+          ><TextTest :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
         </v-container>
       </v-infinite-scroll>
 
@@ -116,5 +127,10 @@ const order = shallowRef(0)
 </template>
 
 <style scoped>
+.hover-effect:hover {
+  background-color: #e0f7fa; /* Light blue background on hover */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  outline: dashed 5px #706ccb;
 
+}
 </style>
