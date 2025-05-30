@@ -138,7 +138,7 @@ const loadMore = () => {
                       width="50%"
                       class="hover-effect mx-1 mt-1"
                   >
-                    评论
+                    输入框
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
@@ -153,38 +153,6 @@ const loadMore = () => {
                 </v-sheet>
               </v-col>
             </v-row>
-
-<!--            <v-sheet-->
-<!--                border="dashed md"-->
-<!--                color="surface-light"-->
-<!--                height="150"-->
-<!--                rounded="lg"-->
-<!--                width="100%"-->
-<!--                class="hover-effect flex-column"-->
-<!--                @click="$router.push('/file-manager/{{item_file.id}}')"-->
-<!--            >-->
-
-<!--              <v-sheet-->
-<!--                  border="dashed md"-->
-<!--                  color="surface-light"-->
-<!--                  height="100"-->
-<!--                  rounded="lg"-->
-<!--                  width="50%"-->
-<!--                  class="hover-effect mx-1 mt-1"-->
-<!--              >-->
-<!--                评论-->
-<!--              </v-sheet>-->
-<!--              <v-sheet-->
-<!--                  border="dashed md"-->
-<!--                  color="surface-light"-->
-<!--                  height="auto"-->
-<!--                  rounded="lg"-->
-<!--                  width="50%"-->
-<!--                  class="hover-effect mx-1 mt-1"-->
-<!--              >-->
-<!--                状态-->
-<!--              </v-sheet>-->
-<!--            </v-sheet>-->
           </v-col>
         </v-row>
 
