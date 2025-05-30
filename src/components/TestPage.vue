@@ -35,11 +35,11 @@ const loadMore = () => {
 
 <template>
   <!-- 顶部导航栏-->
-  <div>
+  <v-container>
     <v-btn @click="$router.push('/')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
       <v-icon>mdi-arrow-left-bottom</v-icon>
     </v-btn>
-  </div>
+  </v-container>
   <v-infinite-scroll  @load="loadMore" :items="head" class="mt-4" >
     <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
       <!--      Head-->
@@ -65,6 +65,8 @@ const loadMore = () => {
       <!--      Comments-->
       <v-container v-for="(item_file, index) in comments" :key="index" :item="item_file">
         <v-row>
+
+<!--          评论头像-->
           <v-col cols="2">
             <v-sheet
                 border="dashed md"
@@ -80,38 +82,109 @@ const loadMore = () => {
               >ID:12312312312312</v-chip>
             </v-sheet>
           </v-col>
+
           <v-col cols="10">
-            <v-sheet
-                border="dashed md"
-                color="surface-light"
-                height="150"
-                rounded="lg"
-                width="100%"
-                class="hover-effect"
-                @click="$router.push('/file-manager/{{item_file.id}}')"
-            >
-              // 评论内容
-              <div class="d-flex justify-content-between align-items-center ">
-                <v-row>
-                  <v-col cols="10">
-                    <v-card-title>评论内容</v-card-title>
-                    <v-card-text>评论内容</v-card-text>
-                    </v-col>
-                  <v-col cols="2">
-                    <v-btn
-                        color="primary"
-                        icon
-                        @click="$router.push('/profile')"
-                    >
-                      <v-icon>mdi-account</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
 
-              </div>
+            <v-row>
+              <v-col cols="8" class="bg-blue">
+                <v-sheet
+                    border="dashed md"
+                    color="surface-light"
+                    height="150"
+                    rounded="lg"
+                    width="100%"
+                    class="hover-effect flex-column"
+                    @click="$router.push('/file-manager/{{item_file.id}}')"
+                >
 
+                  <v-sheet
+                      border="dashed md"
+                      color="surface-light"
+                      height="100"
+                      rounded="lg"
+                      width="50%"
+                      class="hover-effect mx-1 mt-1"
+                  >
+                    评论
+                  </v-sheet>
+                  <v-sheet
+                      border="dashed md"
+                      color="surface-light"
+                      height="auto"
+                      rounded="lg"
+                      width="50%"
+                      class="hover-effect mx-1 mt-1"
+                  >
+                    状态
+                  </v-sheet>
+                </v-sheet>
+              </v-col>
+              <v-col cols="4" class="bg-red">
+                <v-sheet
+                    border="dashed md"
+                    color="surface-light"
+                    height="150"
+                    rounded="lg"
+                    width="100%"
+                    class="hover-effect flex-column"
+                    @click="$router.push('/file-manager/{{item_file.id}}')"
+                >
 
-            </v-sheet>
+                  <v-sheet
+                      border="dashed md"
+                      color="surface-light"
+                      height="100"
+                      rounded="lg"
+                      width="50%"
+                      class="hover-effect mx-1 mt-1"
+                  >
+                    评论
+                  </v-sheet>
+                  <v-sheet
+                      border="dashed md"
+                      color="surface-light"
+                      height="auto"
+                      rounded="lg"
+                      width="50%"
+                      class="hover-effect mx-1 mt-1"
+                  >
+                    操作栏
+                  </v-sheet>
+                </v-sheet>
+              </v-col>
+            </v-row>
+
+<!--            <v-sheet-->
+<!--                border="dashed md"-->
+<!--                color="surface-light"-->
+<!--                height="150"-->
+<!--                rounded="lg"-->
+<!--                width="100%"-->
+<!--                class="hover-effect flex-column"-->
+<!--                @click="$router.push('/file-manager/{{item_file.id}}')"-->
+<!--            >-->
+
+<!--              <v-sheet-->
+<!--                  border="dashed md"-->
+<!--                  color="surface-light"-->
+<!--                  height="100"-->
+<!--                  rounded="lg"-->
+<!--                  width="50%"-->
+<!--                  class="hover-effect mx-1 mt-1"-->
+<!--              >-->
+<!--                评论-->
+<!--              </v-sheet>-->
+<!--              <v-sheet-->
+<!--                  border="dashed md"-->
+<!--                  color="surface-light"-->
+<!--                  height="auto"-->
+<!--                  rounded="lg"-->
+<!--                  width="50%"-->
+<!--                  class="hover-effect mx-1 mt-1"-->
+<!--              >-->
+<!--                状态-->
+<!--              </v-sheet>-->
+<!--            </v-sheet>-->
           </v-col>
         </v-row>
 
