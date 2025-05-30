@@ -55,6 +55,10 @@ const loadMore = () => {
     items.value = [...items.value, ...newItems];
   }, 1000);
 };
+
+// 模拟分页
+const page = ref(1)
+const pages_number = ref(10)
 </script>
 
 <template>
@@ -123,9 +127,12 @@ const loadMore = () => {
                 width="100%"
                 class="hover-effect"
             ><PersonalPost :index="index" :item="item"/></v-sheet>
-
           </v-container>
-        // 换页按钮
+        <v-pagination
+            v-model="page"
+            :length="pages_number"
+            class="my-4"
+        ></v-pagination>
 
       </v-sheet>
 

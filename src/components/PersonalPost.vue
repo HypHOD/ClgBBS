@@ -18,7 +18,8 @@ defineProps(['index','item'])
     <v-container class="d-flex flex-col fill-width" @click="$router.push('/post/' + item.id)">
       <v-chip
           :class="{ 'text-field-blur': isBlurred }"
-          class="height-40"
+          class="w-auto h-18"
+          outlined
       >{{item.content}}</v-chip>
     </v-container>
     </div>
