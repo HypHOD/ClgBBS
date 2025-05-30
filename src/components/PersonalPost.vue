@@ -13,15 +13,23 @@ defineProps(['index','item'])
 </script>
 
 <template>
-  <v-container class="d-flex flex-col fill-width">
-    <v-chip
-        :class="{ 'text-field-blur': isBlurred }"
-        class="height-40"
-    >{{item.content}}</v-chip>
-  </v-container>
+  <div class="d-flex fill-width">
+
+    <v-container class="d-flex flex-col fill-width" @click="$router.push('/post/' + item.id)">
+      <v-chip
+          :class="{ 'text-field-blur': isBlurred }"
+          class="height-40"
+      >{{item.content}}</v-chip>
+    </v-container>
+    </div>
 </template>
 
 <style scoped>
+.hover-effect:hover {
+  background-color: #e0f7fa; /* Light blue background on hover */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
 .text-field-blur {
   filter: blur(10px);
 }
