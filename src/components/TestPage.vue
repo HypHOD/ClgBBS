@@ -10,8 +10,8 @@ let head = ref([
 
 // 评论
 const comments = ref([
-  { id: 2, content: 'Text', likes: 0, liked: false },
-  { id: 3, content: 'Image', likes: 10, liked: false },
+  { id: 2, content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
+  { id: 3, content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
 ]);
 
 // 模拟每次加载的数据数量
@@ -211,7 +211,7 @@ const submitComment = () => {
                   <v-sheet
                       border="dashed md"
                       color="surface-light"
-                      height="100"
+                      height="50%"
                       rounded="lg"
                       width="50%"
                       class="hover-effect mx-1 mt-1"
@@ -223,10 +223,31 @@ const submitComment = () => {
                       color="surface-light"
                       height="auto"
                       rounded="lg"
-                      width="50%"
-                      class="hover-effect mx-1 mt-1"
+                      width="auto"
+                      class="hover-effect mx-1 mt-1 flex"
+
                   >
-                    状态
+                    <!-- 点赞 举报 -->
+                    <v-card-actions>
+                      <v-btn class="bg-red hover-effect" @click="handleLike(item_file)">
+                        <v-icon v-if="item_file.liked">mdi-heart</v-icon>
+                        <v-icon v-if="!item_file.liked">mdi-heart-outline</v-icon>
+                        点赞
+                        <!-- 点赞数量 -->
+                        <v-chip
+                            color="primary"
+                            label
+                        >{{ item_file.likes }}</v-chip>
+                      </v-btn>
+
+                      <v-btn class="bg-black hover-effect" @click="handleReport">
+                        <v-icon>mdi-flag</v-icon>
+                        举报
+                      </v-btn>
+
+                    </v-card-actions>
+
+
 
                   </v-sheet>
                 </v-sheet>
@@ -248,40 +269,33 @@ const submitComment = () => {
                       height="100"
                       rounded="lg"
                       width="auto"
-                      class="hover-effect mx-1 mt-1"
+                      class="hover-effect mx-1 mt-1 flex-column"
                   >
                     <!-- 状态栏 -->
-                    <!-- 点赞 举报 -->
-                    <v-card-actions>
-                      <v-btn class="bg-red hover-effect" @click="handleLike(item_file)">
-                        <v-icon v-if="item_file.liked">mdi-heart</v-icon>
-                        <v-icon v-if="!item_file.liked">mdi-heart-outline</v-icon>
-                        点赞
-                        <!-- 点赞数量 -->
-                        <v-chip
-                            color="primary"
-                            label
-                        >{{ item_file.likes }}</v-chip>
-                      </v-btn>
+                    <v-chip
+                        color="primary"
+                        label
+                        class="mt-1 mx-1"
+                    >父评论ID:{{ comments[index].parentId }}</v-chip>
+                    <v-chip
+                        color="primary"
+                        label
+                        class="mt-1 mx-1"
+                    >当前评论ID:{{ comments[index].commentId }}</v-chip>
+                    <v-chip
+                        color="primary"
+                        label
+                        class="mt-1 mx-1"
+                    >发布时间:{{ comments[index].creatTime }}</v-chip>
 
-                      <v-btn class="bg-black hover-effect" @click="handleReport">
-                        <v-icon>mdi-flag</v-icon>
-                        举报
-                      </v-btn>
 
-                      <v-btn class="bg-blue hover-effect" @click="openReplyDialog(item_file)">
-                        <v-icon>mdi-comment-text-outline</v-icon>
-                        回复
-                      </v-btn>
-
-                    </v-card-actions>
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
                       color="surface-light"
                       height="auto"
                       rounded="lg"
-                      width="50%"
+                      width="auto"
                       class="hover-effect mx-1 mt-1"
                   >
                     操作栏
