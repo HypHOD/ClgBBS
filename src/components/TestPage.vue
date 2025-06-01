@@ -89,22 +89,34 @@ const submitComment = () => {
       liked: false,
       parentId: currentReplyTarget.value.id
     };
-    comments.value = [...comments.value, newComment];
+
+    // 发送新评论到服务器
+    axios.post('API_URL/comments', newComment)
+        .then(() => {
+          console.log('评论提交成功');
+          comments.value = [...comments.value, newComment]; // 更新本地评论列表
+        })
+        .catch(() => {
+          console.log('评论提交失败');
+        });
+
+    replyDialog.value = false;
   }
-  replyDialog.value = false;
 };
 </script>
 
 <template>
   <!-- 顶部导航栏-->
-  <v-container class="top-0 position-static">
-    <v-btn @click="$router.push('/')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
-      <v-icon>mdi-arrow-left-bottom</v-icon>
-    </v-btn>
-  </v-container>
+  <div class="fixed-top">
+    <v-container class="top-0 position-static">
+      <v-btn @click="$router.push('/')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
+        <v-icon>mdi-arrow-left-bottom</v-icon>
+      </v-btn>
+    </v-container>
+  </div>
 
   <!-- Head -->
-  <v-container class="bg-amber">
+  <v-container class="mt-5 bg-amber mt-8">
     <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
       <v-row>
         <v-col cols="2">
@@ -301,6 +313,14 @@ const submitComment = () => {
 </template>
 
 <style scoped>
+.fixed-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* 确保按钮在其他内容之上 */
+}
+
 .hover-effect:hover {
   background-color: #e0f7fa;
   cursor: pointer;
