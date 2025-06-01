@@ -69,15 +69,29 @@ const handleReport = () => {
       });
 };
 
-// 评论的方法
-const handleComment = () => {
-  console.log('评论');
-  // 评论内容
-  const comment = prompt('请输入评论内容');
-  if (comment) {
-    const newComment = { id: comments.value.length + 1, content: comment, likes: 0, liked: false };
+// 回复相关的变量和方法
+const replyDialog = ref(false);
+const currentReplyTarget = ref(null);
+const currentReplyContent = ref('');
+
+const openReplyDialog = (target: any) => {
+  currentReplyTarget.value = target;
+  currentReplyContent.value = ''; // 清空回复内容
+  replyDialog.value = true;
+};
+
+const submitComment = () => {
+  if (currentReplyContent.value.trim()) {
+    const newComment = {
+      id: comments.value.length + 1,
+      content: currentReplyContent.value,
+      likes: 0,
+      liked: false,
+      parentId: currentReplyTarget.value.id
+    };
     comments.value = [...comments.value, newComment];
   }
+  replyDialog.value = false;
 };
 </script>
 
@@ -135,7 +149,7 @@ const handleComment = () => {
                 举报
               </v-btn>
 
-              <v-btn class="bg-blue hover-effect" @click="handleComment">
+              <v-btn class="bg-blue hover-effect" @click="openReplyDialog(head[0])">
                 <v-icon>mdi-comment-text-outline</v-icon>
                 回复
               </v-btn>
@@ -190,7 +204,7 @@ const handleComment = () => {
                       width="50%"
                       class="hover-effect mx-1 mt-1"
                   >
-                    评论
+                    {{ item_file.content }}
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
@@ -227,15 +241,15 @@ const handleComment = () => {
                     <!-- 状态栏 -->
                     <!-- 点赞 举报 -->
                     <v-card-actions>
-                      <v-btn class="bg-red hover-effect" @click="handleLike(comments[index])">
-                        <v-icon v-if="comments[index].liked">mdi-heart</v-icon>
-                        <v-icon v-if="!comments[index].liked">mdi-heart-outline</v-icon>
+                      <v-btn class="bg-red hover-effect" @click="handleLike(item_file)">
+                        <v-icon v-if="item_file.liked">mdi-heart</v-icon>
+                        <v-icon v-if="!item_file.liked">mdi-heart-outline</v-icon>
                         点赞
                         <!-- 点赞数量 -->
                         <v-chip
                             color="primary"
                             label
-                        >{{ comments[index].likes }}</v-chip>
+                        >{{ item_file.likes }}</v-chip>
                       </v-btn>
 
                       <v-btn class="bg-black hover-effect" @click="handleReport">
@@ -243,7 +257,7 @@ const handleComment = () => {
                         举报
                       </v-btn>
 
-                      <v-btn class="bg-blue hover-effect" @click="handleComment">
+                      <v-btn class="bg-blue hover-effect" @click="openReplyDialog(item_file)">
                         <v-icon>mdi-comment-text-outline</v-icon>
                         回复
                       </v-btn>
@@ -269,6 +283,21 @@ const handleComment = () => {
       </v-container>
     </v-sheet>
   </v-infinite-scroll>
+
+  <!-- 回复对话框 -->
+  <v-dialog v-model="replyDialog" max-width="500px">
+    <v-card>
+      <v-card-title>回复</v-card-title>
+      <v-card-text>
+        <v-textarea v-model="currentReplyContent" label="请输入回复内容"></v-textarea>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="submitComment">提交</v-btn>
+        <v-btn color="grey darken-1" text @click="replyDialog = false">取消</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>
