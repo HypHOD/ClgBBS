@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import {ref, onMounted, shallowRef} from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 // 模拟数据数组
 // 楼主
-// const {head, comments}= fetch('')
-
-const head = ref([
-  { id: 1, content: 'Text' },
-  { id: 2, content: 'Image' },
+let head = ref([
+  { id: 1, title: 'Title', content: 'Text', likes: 0, liked: false },
 ]);
 
 // 评论
 const comments = ref([
-  { id: 1, content: 'Text' },
-  { id: 2, content: 'Image' },
+  { id: 2, content: 'Text', likes: 0, liked: false },
+  { id: 3, content: 'Image', likes: 10, liked: false },
 ]);
 
 // 模拟每次加载的数据数量
-const itemsPerLoad = 2;
+const itemsPerLoad = 3;
 
 // 加载更多数据的方法
 const loadMore = () => {
@@ -31,42 +29,129 @@ const loadMore = () => {
   }, 1000);
 };
 
+// 点赞的方法
+const handleLike = (item: any) => {
+  if (!item.liked) {
+    item.likes++;
+    item.liked = true;
+    console.log('点赞成功');
+  } else {
+    item.likes--;
+    item.liked = false;
+    console.log('取消点赞成功');
+  }
+
+  // 向服务器发送点赞数量
+  axios.post('API_URL/like', { id: item.id, likes: item.likes })
+      .then(() => {
+        console.log('点赞数量刷新成功');
+      })
+      .catch(() => {
+        console.log('点赞数量刷新失败');
+      });
+};
+
+// 举报的方法
+const handleReport = () => {
+  console.log('举报');
+  // 举报内容
+  const report = prompt('请输入举报内容');
+  if (report) {
+    console.log('举报成功');
+  }
+  // 向服务器发送举报内容
+  axios.post('API_URL/report', { content: report })
+      .then(() => {
+        console.log('举报成功');
+      })
+      .catch(() => {
+        console.log('举报失败');
+      });
+};
+
+// 评论的方法
+const handleComment = () => {
+  console.log('评论');
+  // 评论内容
+  const comment = prompt('请输入评论内容');
+  if (comment) {
+    const newComment = { id: comments.value.length + 1, content: comment, likes: 0, liked: false };
+    comments.value = [...comments.value, newComment];
+  }
+};
 </script>
 
 <template>
   <!-- 顶部导航栏-->
-  <v-container>
+  <v-container class="top-0 position-static">
     <v-btn @click="$router.push('/')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
       <v-icon>mdi-arrow-left-bottom</v-icon>
     </v-btn>
   </v-container>
-  <v-infinite-scroll  @load="loadMore" :items="head" class="mt-4" >
+
+  <!-- Head -->
+  <v-container class="bg-amber">
     <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
-      <!--      Head-->
-      <v-container>
-        <v-row>
-          <v-col cols="2">
-            <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="200" class="mx-1">
-              <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/profile')">
+      <v-row>
+        <v-col cols="2">
+          <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class=" mx-1 mt-0">
+            <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/profile')">
+            <v-chip
+                color="primary"
+                label
+                class="mt-1"
+            >ID:{{ head[0].id }}</v-chip>
           </v-sheet>
+        </v-col>
+        <v-col cols="10">
+          <v-sheet border="dashed md" color="surface-light" min-height="200" rounded="lg" width="auto" class="mx-1 mt-0">
+            <v-card class="mx-1" height="full">
+              <v-card-title>
+                {{ head[0].title }}
+              </v-card-title>
+              <hr>
+              <v-card-text>
+                {{ head[0].content }}
+              </v-card-text>
+            </v-card>
+          </v-sheet>
+          <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
+            <!-- 状态栏 -->
+            <!-- 点赞 举报 -->
+            <v-card-actions>
+              <v-btn class="bg-red hover-effect" @click="handleLike(head[0])">
+                <v-icon v-if="head[0].liked">mdi-heart</v-icon>
+                <v-icon v-if="!head[0].liked">mdi-heart-outline</v-icon>
+                点赞
+                <!-- 点赞数量 -->
+                <v-chip
+                    color="primary"
+                    label
+                >{{ head[0].likes }}</v-chip>
+              </v-btn>
 
-            </v-col>
-          <v-col cols="10">
-            <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="auto" class="mx-1 right-0">
-              <v-card :height="'100%'">
-                <v-card-title>我是标题</v-card-title>
-                <v-card-text>我是内容</v-card-text>
-              </v-card>
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
+              <v-btn class="bg-black hover-effect" @click="handleReport">
+                <v-icon>mdi-flag</v-icon>
+                举报
+              </v-btn>
 
-      <!--      Comments-->
+              <v-btn class="bg-blue hover-effect" @click="handleComment">
+                <v-icon>mdi-comment-text-outline</v-icon>
+                回复
+              </v-btn>
+            </v-card-actions>
+          </v-sheet>
+        </v-col>
+      </v-row>
+    </v-sheet>
+  </v-container>
+
+  <v-infinite-scroll @load="loadMore" :items="head" class="mt-4">
+    <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
+      <!-- Comments -->
       <v-container v-for="(item_file, index) in comments" :key="index" :item="item_file">
         <v-row>
-
-<!--          评论头像-->
+          <!-- 评论头像 -->
           <v-col cols="2">
             <v-sheet
                 border="dashed md"
@@ -79,7 +164,7 @@ const loadMore = () => {
               <v-chip
                   color="primary"
                   label
-              >ID:12312312312312</v-chip>
+              >ID:{{ comments[index].id }}</v-chip>
             </v-sheet>
           </v-col>
 
@@ -94,7 +179,7 @@ const loadMore = () => {
                     rounded="lg"
                     width="100%"
                     class="hover-effect flex-column"
-                    @click="$router.push('/file-manager/{{item_file.id}}')"
+                    @click=""
                 >
 
                   <v-sheet
@@ -116,6 +201,7 @@ const loadMore = () => {
                       class="hover-effect mx-1 mt-1"
                   >
                     状态
+
                   </v-sheet>
                 </v-sheet>
               </v-col>
@@ -127,7 +213,7 @@ const loadMore = () => {
                     rounded="lg"
                     width="100%"
                     class="hover-effect flex-column"
-                    @click="$router.push('/file-manager/{{item_file.id}}')"
+                    @click=""
                 >
 
                   <v-sheet
@@ -135,10 +221,34 @@ const loadMore = () => {
                       color="surface-light"
                       height="100"
                       rounded="lg"
-                      width="50%"
+                      width="auto"
                       class="hover-effect mx-1 mt-1"
                   >
-                    输入框
+                    <!-- 状态栏 -->
+                    <!-- 点赞 举报 -->
+                    <v-card-actions>
+                      <v-btn class="bg-red hover-effect" @click="handleLike(comments[index])">
+                        <v-icon v-if="comments[index].liked">mdi-heart</v-icon>
+                        <v-icon v-if="!comments[index].liked">mdi-heart-outline</v-icon>
+                        点赞
+                        <!-- 点赞数量 -->
+                        <v-chip
+                            color="primary"
+                            label
+                        >{{ comments[index].likes }}</v-chip>
+                      </v-btn>
+
+                      <v-btn class="bg-black hover-effect" @click="handleReport">
+                        <v-icon>mdi-flag</v-icon>
+                        举报
+                      </v-btn>
+
+                      <v-btn class="bg-blue hover-effect" @click="handleComment">
+                        <v-icon>mdi-comment-text-outline</v-icon>
+                        回复
+                      </v-btn>
+
+                    </v-card-actions>
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
@@ -167,5 +277,7 @@ const loadMore = () => {
   cursor: pointer;
   outline: dashed 5px #706ccb;
 }
-
 </style>
+
+
+
