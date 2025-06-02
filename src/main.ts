@@ -7,9 +7,27 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 import router from './router'
 
+// 配置 NProgress（可选）
+NProgress.configure({
+    showSpinner: false,  // 隐藏加载 spinner
+    easing: 'ease',
+    speed: 500
+});
+
+// 路由切换时显示进度条
+router.beforeEach((to, from, next) => {
+    NProgress.start();  // 开始加载
+    next();
+});
+
+router.afterEach(() => {
+    NProgress.done();  // 加载完成
+});
 
 const vuetify = createVuetify({
     components,
