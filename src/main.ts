@@ -7,10 +7,15 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+
+//导入 nprogress
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import router from './router'
+
+// import marked from 'marked'
+// import DOMPurify from 'dompurify'
 
 // 配置 NProgress（可选）
 NProgress.configure({
@@ -34,6 +39,9 @@ const vuetify = createVuetify({
     directives,
 })
 
-createApp(App).use(vuetify)
+const app = createApp(App)
+
+
+app.use(vuetify)
     .use(router)
     .mount('#app')

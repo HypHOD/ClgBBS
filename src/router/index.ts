@@ -4,10 +4,15 @@ import {createRouter, createWebHistory,} from 'vue-router'
 const router = createRouter({
     history: createWebHistory(),
     routes: [
+        // {
+        //     path: '/',
+        //     name: 'Home',
+        //     redirect: '/app-layout'
+        // },
         {
             path: '/',
             name: 'Home',
-            redirect: '/app-layout'
+            redirect: '/sign-in'
         },
         {
             path: '/sign-in',
@@ -43,7 +48,23 @@ const router = createRouter({
             path: '/test-page',
             name: 'TestPage',
             component: () => import('../components/TestPage.vue')
-        }
+        },
+        {
+            path: '/forget-password',
+            name: 'ForgetPassword',
+            component: () => import('../components/ForgetPassword.vue')
+        },
+        {
+            path: '/post-detail/:id',
+            name: 'PostDetail',
+            component: () => import('../components/PostDetail.vue')
+        },
+        {
+            path: '/sign-in',
+            name: 'SignIn',
+            component: () => import('../components/SignIn.vue')
+        },
+
 
     ]
 })

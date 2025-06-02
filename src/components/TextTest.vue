@@ -4,12 +4,17 @@ const postContent = ref('');
 const displayText = ref('');
 const isBlurred = ref(false);
 
+
 setTimeout(() => {
   postContent.value = '这是一个很长的服务器帖子内容示例，包含很多信息...';
   displayText.value = postContent.value.substring(0, 50) + (postContent.value.length > 50? '...' : '');
 }, 1000);
 
+
 defineProps(['index','item'])
+
+
+
 </script>
 
 <template>
@@ -27,7 +32,7 @@ defineProps(['index','item'])
     <v-chip
         :class="{ 'text-field-blur': isBlurred }"
         class="height-40"
-    >{{item.content}}</v-chip>
+    >ID:{{item.id}}</v-chip>
   </v-container>
 </template>
 
@@ -35,6 +40,5 @@ defineProps(['index','item'])
   .text-field-blur {
     filter: blur(10px);
   }
-
 
 </style>

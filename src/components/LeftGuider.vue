@@ -31,12 +31,16 @@
           <v-list-item prepend-icon="mdi-view-dashboard" title="文件2" value="fileID:002"></v-list-item>
           <v-list-item prepend-icon="mdi-view-dashboard" title="文件3" value="fileID:003"></v-list-item>
         </v-list>
-        <v-btn color="primary" to="/upload-file">upload file</v-btn>
-
+        <v-card-title>
+          <h2>File List</h2>
+        </v-card-title>
+        <v-file-input
+            label="File input"
+            multiple
+        ></v-file-input>
       </v-navigation-drawer>
       <v-main style="height: 250px"></v-main>
     </v-layout>
-
   </v-card>
 
 </template>

@@ -1,18 +1,40 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref , onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+// import {fetchPostDetailById} from '@/api/post'
 
+const router = useRouter()
 // 模拟数据数组
 // 楼主
-let head = ref([
-  { id: 1, title: 'Title', content: 'Text', likes: 0, liked: false },
+const head = ref([
+  { uid: 1, title: 'Title', content: 'Text', likes: 0, liked: false, creatTime: '2022-01-01 12:00:00' },
 ]);
 
 // 评论
 const comments = ref([
-  { id: 2, content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
-  { id: 3, content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
+  { uid: 2, content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
+  { uid: 3, content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
 ]);
+const postId = Number(router.currentRoute.value.params.id)
+
+
+
+// 向服务器申请对应内容
+// function fetchPostDetail(id: number) {
+//   axios.get('/api/post/' + id)
+//      .then((response) => {
+//         head.value = [response.data];
+//       })
+//      .catch((error) => {
+//         console.log(error);
+//       });
+// }
+
+
+// /api/comments?postId=:id（获取评论列表）
+// /api/post/:id（获取帖子详情）
+
 
 // 模拟每次加载的数据数量
 const itemsPerLoad = 3;
@@ -126,7 +148,7 @@ const submitComment = () => {
                 color="primary"
                 label
                 class="mt-1"
-            >ID:{{ head[0].id }}</v-chip>
+            >UID:{{ head[0].uid }}</v-chip>
           </v-sheet>
         </v-col>
         <v-col cols="10">
@@ -165,6 +187,13 @@ const submitComment = () => {
                 <v-icon>mdi-comment-text-outline</v-icon>
                 回复
               </v-btn>
+
+              <v-chip>
+                发布时间:{{ head[0].creatTime }}
+              </v-chip>
+              <v-chip>
+                主题帖ID:{{ postId }}
+              </v-chip>
             </v-card-actions>
           </v-sheet>
         </v-col>
@@ -190,7 +219,7 @@ const submitComment = () => {
               <v-chip
                   color="primary"
                   label
-              >ID:{{ comments[index].id }}</v-chip>
+              >UID:{{ comments[index].uid }}</v-chip>
             </v-sheet>
           </v-col>
 
@@ -276,12 +305,12 @@ const submitComment = () => {
                         color="primary"
                         label
                         class="mt-1 mx-1"
-                    >父评论ID:{{ comments[index].parentId }}</v-chip>
+                    >父评论ID:{{ postId }}</v-chip>
                     <v-chip
                         color="primary"
                         label
                         class="mt-1 mx-1"
-                    >当前评论ID:{{ comments[index].commentId }}</v-chip>
+                    >当前评论楼层:{{ comments[index].commentId }}</v-chip>
                     <v-chip
                         color="primary"
                         label

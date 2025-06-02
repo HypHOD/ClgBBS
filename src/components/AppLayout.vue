@@ -6,6 +6,9 @@ import LeftGuider from "./LeftGuider.vue";
 import GroupList from "./GroupList.vue";
 import OperationBar from "./OperationBar.vue";
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 
 
@@ -53,10 +56,8 @@ const order = shallowRef(0)
 
   const handleClick = (item) => {
     console.log(item)
-    // 帖子详细页显示在页面上层
-    // 显示帖子详细页组件
-    // 传递帖子数据给帖子详细页组件
-    // 关闭抽屉
+    // 跳转到详情页
+    router.push('/post-detail/' + item.id);
   }
 </script>
 
@@ -117,7 +118,7 @@ const order = shallowRef(0)
               width="100%"
               class="hover-effect"
               @click="handleClick(item)"
-          ><TextTest :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
+          ><TextTest :id="item.id" :content="item.content" :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
         </v-container>
       </v-infinite-scroll>
 
