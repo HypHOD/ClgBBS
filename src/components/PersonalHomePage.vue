@@ -42,13 +42,13 @@ const componentsMap = {
 
 // 模拟数据数组
 const items = ref([
-  { id: 1, content: 'Text' },
-  { id: 2, content: 'Image' },
+  { postId: 1, content: 'Text' },
+  { postId: 2, content: 'Image' },
 ]);
 
 const items_file = ref([
-  { id: 1, content: 'Text' },
-  { id: 2, content: 'Image' },
+  { fileId: 1, content: 'Text' },
+  { fileId: 2, content: 'Image' },
 ]);
 
 // 模拟每次加载的数据数量
@@ -88,8 +88,13 @@ const loadMore = () => {
     </div>
 
     <v-container class="bg-blue-100 rounded-lg ml-2 mt-2" max-width="240">
-      <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="200" class="mx-1">
+
+      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="200" class="mx-1">
+<!--        点击修改个人信息-->
         <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/profile')">
+        <v-chip>
+          UID:{{ID}}
+        </v-chip>
       </v-sheet>
 
 <!--      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="200" class="mx-1">-->
@@ -126,6 +131,8 @@ const loadMore = () => {
     <v-container class="mt-2 ml-2 flex-grow-1 bg-blue-100 rounded-lg">
 
       <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-2 ">
+        <h2 class="text-xl font-bold text-gray-800 ">历史动态</h2>
+
           <v-container v-for="(item, index) in items" :key="index" :item="item">
             <v-sheet
                 border="dashed md"
@@ -134,7 +141,10 @@ const loadMore = () => {
                 rounded="lg"
                 width="100%"
                 class="hover-effect"
-            ><PersonalPost :index="index" :item="item"/></v-sheet>
+            >
+              <v-chip class="ml-2 mt-2">postId:{{item.postId}}</v-chip>
+              <PersonalPost :index="index" :item="item"/>
+            </v-sheet>
           </v-container>
         <v-pagination
             v-model="page"
@@ -158,7 +168,7 @@ const loadMore = () => {
                   class="hover-effect"
                   @click="$router.push('/file-manager/{{item_file.id}}')"
               >
-                // 文件浏览
+                <v-chip class="ml-2 mt-2">fileId:{{item_file.fileId}}</v-chip>
                 <p>{{item_file.content}}</p>
               </v-sheet>
             </v-col>
