@@ -1,38 +1,65 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import PersonalPost from "@/components/PersonalPost.vue";
 const postContent = ref('');
 const displayText = ref('');
-const isBlurred = ref(false);
+// const isBlurred = ref(false);
 
 
 setTimeout(() => {
-  postContent.value = '这是一个很长的服务器帖子内容示例，包含很多信息...';
+  postContent.value = '服务器帖子内容示例，';
   displayText.value = postContent.value.substring(0, 50) + (postContent.value.length > 50? '...' : '');
 }, 1000);
 
 
-defineProps(['index','item'])
-
-
+defineProps(['index','item','isBlurred','postClassify'])
 
 </script>
 
 <template>
   <v-container class="d-flex flex-col fill-width">
-    <v-container class="d-flex items-center">
-      <img
-          src="https://picsum.photos/50"
-          alt="User Avatar"
-          class="w-10 h-10 rounded-full mr-2"
-      />
-      <span class="text-lg font-bold">用户{{index}}</span>
-      <v-switch v-model="isBlurred" label="Toggle Blur" class = "right-0-0 ml-auto mt-0"/>
-
-    </v-container>
-    <v-chip
-        :class="{ 'text-field-blur': isBlurred }"
-        class="height-40"
-    >ID:{{item.id}}</v-chip>
+      <v-row>
+        <v-col cols="2">
+          <v-row>
+            <img
+                src="@/assets/cdm.jpg"
+                alt="User Avatar"
+                class="w-35  rounded mr-2"
+            />
+          </v-row>
+<!--          <v-row>-->
+<!--            <span class="text-lg font-bold">用户{{index}}</span>-->
+<!--          </v-row>-->
+          <v-row>
+            <v-chip
+                class="height-40"
+            >UID:{{item.id}}</v-chip>
+          </v-row>
+        </v-col>
+        <v-col cols="9"
+               :class="{ 'text-field-blur': isBlurred }"
+        >
+              <v-sheet
+                  border="dashed md"
+                  color="surface-light"
+                  height="150"
+                  rounded="lg"
+                  width="100%"
+                  class="hover-effect"
+              >
+                {{displayText}}
+              </v-sheet>
+        </v-col>
+        <v-col cols="1" class="bg-gray-200 text-center">
+          <v-chip
+              class="height-40"
+          >PID:{{item.id}}</v-chip>
+          <v-chip
+              class="height-40"
+          >分类:{{postClassify}}</v-chip>
+        </v-col>
+      </v-row>
+<!--      <v-switch label="Toggle Blur" class = "right-0-0 ml-auto mt-0"/>-->
   </v-container>
 </template>
 

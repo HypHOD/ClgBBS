@@ -10,6 +10,11 @@ const router = createRouter({
         //     redirect: '/app-layout'
         // },
         {
+            path: '/post-list',
+            name: 'PostList',
+            component: () => import('../components/PostList.vue')
+        },
+        {
             path: '/',
             name: 'Home',
             redirect: '/sign-in'

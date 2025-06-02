@@ -8,11 +8,9 @@
     <v-layout>
       <v-navigation-drawer floating permanent>
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-forum" title="最新" value="time"></v-list-item>
-          <v-list-item prepend-icon="mdi-forum" title="最热门" value="hot"></v-list-item>
-          <v-list-item prepend-icon="mdi-forum" title="最多点赞" value="like"></v-list-item>
-          <v-list-item prepend-icon="mdi-forum" title="最多收藏" value="favourite"></v-list-item>
-          <v-list-item prepend-icon="mdi-forum" title="最多评论" value="comment"></v-list-item>
+          <v-list-item prepend-icon="mdi-forum" title="帖子" value="time"></v-list-item>
+          <v-list-item prepend-icon="mdi-forum" title="文件" value="hot"></v-list-item>
+          <v-list-item prepend-icon="mdi-forum" title="群组" value="like"></v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main style="height: 250px"></v-main>

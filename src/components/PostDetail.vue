@@ -131,7 +131,7 @@ const submitComment = () => {
   <!-- 顶部导航栏-->
   <div class="fixed-top">
     <v-container class="top-0 position-static">
-      <v-btn @click="$router.push('/')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
+      <v-btn @click="$router.push('/app-layout')" variant="outlined" block class="bg-white text-black hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
         <v-icon>mdi-arrow-left-bottom</v-icon>
       </v-btn>
     </v-container>

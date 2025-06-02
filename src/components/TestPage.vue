@@ -1,93 +1,179 @@
-<script setup lang="ts" name="ForgetPassword">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+<script setup lang="ts">
+import {reactive, ref, shallowRef} from 'vue'
+import TextTest from "./TextTest.vue";
+import UserInfo from "./UserInfo.vue";
+import PostList from "./PostList.vue";
+import PostDetail from "./PostDetail.vue";
+import SignIn from "./SignIn.vue";
+import OperationBar from "./OperationBar.vue";
+import axios from 'axios';
+import { useRouter , RouterView , RouterLink } from 'vue-router';
 
 const router = useRouter();
 
-const email = ref('');
-const password = ref('');
-const feedbackMessage = ref('');
-const isSuccess = ref(false);
 
-const handleSubmit = async () => {
-  try {
-    const response = await fetch('API_URL/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
-    });
+// 模拟群组数据
+const groups = ref([
+  { name: '群组 1' },
+  { name: '群组 2' },
+  { name: '群组 3' },
+]);
+//   const fetchPosts = async () => {
+//   try {
+//     const response = await axios.get('API_URL');
+//     const data = response.data;
+//
+//     // 使用 reactive 来管理帖子数据
+//     return reactive(data);
+//   } catch (error) {
+//     console.error('Error fetching posts:', error);
+//     return [];
+//   }
+// };
+//
+// // 调用函数获取帖子数据
+// const posts = await fetchPosts();
 
-    if (!response.ok) {
-      throw new Error('登录失败，请检查您的邮箱和密码');
-    }
+const order = shallowRef(0)
 
-    const data = await response.json();
-    if (data.success) {
-      feedbackMessage.value = '登录成功！即将跳转到主页面...';
-      isSuccess.value = true;
-      setTimeout(() => {
-        router.push('/app-layout'); // 假设主页面的路由是 /app-layout
-      }, 2000);
-    } else {
-      feedbackMessage.value = '登录失败，请检查您的邮箱和密码';
-      isSuccess.value = false;
-    }
-  } catch (error) {
-    feedbackMessage.value = error.message;
-    isSuccess.value = false;
-  }
+// 模拟数据数组
+const items = ref([
+  { id: 1, content: 'Text', isBlurred: false },
+  { id: 2, content: 'Image', isBlurred: false},
+  { id: 3, content: 'Video', isBlurred: false },
+  { id: 4, content: 'https://testURL.com', isBlurred: true },
+]);
+
+// 模拟每次加载的数据数量
+const itemsPerLoad = 3;
+
+// 加载更多数据的方法
+const loadMore = () => {
+  // 模拟异步加载数据
+  setTimeout(() => {
+    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
+      id: items.value.length + i + 1,
+      content: `Item ${items.value.length + i + 1}`,
+    }));
+    items.value = [...items.value, ...newItems];
+  }, 1000);
 };
+
+
+const handleClick = (item) => {
+  console.log(item)
+  // 跳转到详情页
+  router.push('/post-detail/' + item.id);
+}
+
+const tab = ref('Post')
 </script>
 
 <template>
-  <div class="mt-10 isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-    <div class="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]" aria-hidden="true">
-      <div class="relative left-1/2 -z-10 aspect-1155/678 w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" />
-    </div>
-    <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">CLGBBS</h2>
-      <p class="mt-2 text-lg leading-8 text-gray-600">share your knowledge with the world</p>
-    </div>
-    <form @submit.prevent="handleSubmit" class="mx-auto mt-16 max-w-xl sm:mt-20">
-      <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+  <v-layout class="rounded rounded-md border">
+    <v-navigation-drawer color="grey-lighten-1" permanent class="z-10 rounded rounded-md relative">
+      <v-container>
+        <v-row>
+          <UserInfo />
+        </v-row>
+        <v-row>
+          <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 w-full">
+            <v-chip>
+              UID:1234567890
+            </v-chip>
+          </v-card>
+        </v-row>
+        <v-row>
+          <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 w-full">
+            <v-btn color="primary" block class="w-full rounded-lg my-1">发帖</v-btn>
+            <v-btn color="primary" to="/create-group" block class="w-full rounded-lg my-1">探索群组</v-btn>
+          </v-card>
+        </v-row>
+        <v-row>
+          <v-card class="mt-1">
+            <v-card-title>
+              <h2>Group List</h2>
+            </v-card-title>
+            <v-card-text>
+              <v-layout>
+                <v-container class="">
+                  <v-row>
+                    <v-col v-for="(group, index) in groups" :key="index" cols="12" xs="12">
+                      <v-card class="elevation-2">
+                        <v-card-title>{{ group.name }}</v-card-title>
+                        <v-card-actions justify="end">
+                          <v-btn icon color="primary">
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-layout>
+            </v-card-text>
+          </v-card>
+        </v-row>
+      </v-container>
+    </v-navigation-drawer>
 
-        <div class="sm:col-span-2">
-          <label for="email" class="block text-sm font-semibold text-gray-900">邮箱地址</label>
-          <div class="mt-2.5">
-            <input v-model="email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
-          </div>
-        </div>
+    <!--    上侧导航-->
+    <v-app-bar :order="order" color="grey-lighten-2" title="BBSTest" flat class="flex position-fixed top-0 right-0 z-20">
+      <template v-slot:append>
+        <v-btn value="recent">
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+        <v-btn value="favorites">
+          <v-icon class="">mdi-heart</v-icon>
+        </v-btn>
+        <v-btn value="nearby">
+          <v-badge
+              :content="1"
+              :absolute="true"
+              :right="0"
+              :top="0"
+              color="red"
+              rounded
+          >
+            <v-icon class="h-6 w-6 text-gray-600">mdi-bell-outline</v-icon>
+          </v-badge>
+        </v-btn>
+      </template>
+    </v-app-bar>
 
-        <div class="sm:col-span-2">
-          <label for="password" class="block text-sm font-semibold text-gray-900">输入密码</label>
-          <div class="mt-2.5">
-            <input v-model="password" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
-          </div>
-        </div>
+    <!--    主界面-->
+    <v-main height="auto">
+      <v-container>
+        <v-tabs
+            bg-color="indigo-darken-2"
+            fixed-tabs
+            v-model="tab"
+        >
+          <v-tab text="Post" value="Post"></v-tab>
+          <v-tab text="File" value="File"></v-tab>
+          <v-tab text="Group" value="Group"></v-tab>
+        </v-tabs>
+        <v-tabs-window v-model="tab">
+          <v-tabs-window-item value="Post">
+            <PostList></PostList>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="File">
+            <PostDetail></PostDetail>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="Group">
+            NULL
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </v-container>
+    </v-main>
+  </v-layout>
 
-      </div>
-      <div v-if="feedbackMessage" :class="[isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']" class="my-4 p-4 rounded-md">
-        {{ feedbackMessage }}
-      </div>
-      <div class="mt-10 flex justify-center bg-blue-darken-4 rounded-md py-2 text-white text-sm font-semibold hover:bg-blue-darken-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-darken-3" >
-        <button
-            type="submit"
-            class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          登录
-        </button>
-      </div>
-    </form>
-  </div>
 </template>
 
 <style scoped>
-/* 您可以在这里添加自定义样式 */
+.hover-effect:hover {
+  background-color: #e0f7fa; /* Light blue background on hover */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  outline: dashed 5px #706ccb;
+}
 </style>
-
-
-

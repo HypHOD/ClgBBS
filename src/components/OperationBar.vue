@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  const items = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
+  const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
   const breadcrumbs = [
     {
       title: 'Dashboard',
@@ -30,7 +30,7 @@
 
     <v-combobox
         v-model="chips"
-        :items="items"
+        :items="tips"
         label="条件筛选"
         variant="solo"
         chips
