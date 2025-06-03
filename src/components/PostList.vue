@@ -62,12 +62,12 @@ const chips = ref(['Default'])
   <!--    主界面-->
 <!--    <OperationBar />-->
 
-  <v-container class="bg-gray-100t">
-    <v-breadcrumbs :items="breadcrumbs" bg-color="primary" class="flex position-relative top-0">
-      <template v-slot:prepend>
-        <v-icon icon="$vuetify" size="small"></v-icon>
-      </template>
-    </v-breadcrumbs>
+  <v-container class="bg-gray-100">
+<!--    <v-breadcrumbs :items="breadcrumbs" bg-color="primary" class="flex position-relative top-0">-->
+<!--      <template v-slot:prepend>-->
+<!--        <v-icon icon="$vuetify" size="small"></v-icon>-->
+<!--      </template>-->
+<!--    </v-breadcrumbs>-->
     <v-combobox
         v-model="chips"
         :items="tips"

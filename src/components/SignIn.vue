@@ -1,5 +1,6 @@
 <script setup lang="ts" name="ForgetPassword">
 import { useRouter } from 'vue-router'
+import {SwitchLabel} from "@headlessui/vue";
 
 const router = useRouter()
 
@@ -36,7 +37,16 @@ const handleSubmit = () => {
         </div>
 
       </div>
+
+      <v-container>
+        还没有账户?
+        {{ ' ' }}
+        <a href="/create-account" class="font-semibold text-indigo-600">点击这里注册</a>.
+      </v-container>
+
       <div class="mt-10 flex justify-center bg-blue-darken-4 rounded-md py-2 text-white text-sm font-semibold hover:bg-blue-darken-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-darken-3" >
+
+
         <button
             type="submit"
             class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
