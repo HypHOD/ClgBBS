@@ -23,6 +23,7 @@
     "marked": "^15.0.12",
     "material-design-icons-iconfont": "^6.7.0",
     "nprogress": "^0.2.0",
+    "pinia": "^3.0.2",
     "reka-ui": "^2.3.0",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.6",

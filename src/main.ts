@@ -14,6 +14,9 @@ import 'nprogress/nprogress.css'
 
 import router from './router'
 
+// 导入pinia
+import { createPinia } from 'pinia'
+
 // import marked from 'marked'
 // import DOMPurify from 'dompurify'
 
@@ -41,7 +44,9 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 
+const pinia = createPinia()
 
 app.use(vuetify)
     .use(router)
+    .use(pinia)
     .mount('#app')

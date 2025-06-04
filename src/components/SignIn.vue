@@ -1,12 +1,39 @@
 <script setup lang="ts" name="ForgetPassword">
 import { useRouter } from 'vue-router'
-import {SwitchLabel} from "@headlessui/vue";
+import {ref, onMounted, shallowRef} from 'vue'
+import {useSignInStore} from "@/store/SignIn.ts"
 
 const router = useRouter()
+const signInStore = useSignInStore()
 
-const handleSubmit = () => {
-  // 这里可以添加表单验证逻辑
-  router.push('/app-layout') // 假设主页面的路由是 /main-page
+
+const form = ref({
+  email: '',
+  password: ''
+})
+
+const handleSubmit = async () => {
+  try {
+    // 表单验证
+    if (!form.value.email || !form.value.password) {
+      alert('请填写完整登录信息')
+      return
+    }
+
+    // 同步表单数据到Pinia store
+    signInStore.email = form.value.email
+    signInStore.password = form.value.password
+
+    // 调用Pinia仓库中的登录方法
+    await signInStore.signIn()
+
+    // 登录成功后跳转
+    await router.push('/app-layout')
+  } catch (error) {
+    console.error('登录失败:', error)
+    // 显示Pinia store中存储的错误信息
+    alert(signInStore.error || '登录失败，请重试')
+  }
 }
 </script>
 
@@ -25,14 +52,14 @@ const handleSubmit = () => {
         <div class="sm:col-span-2">
           <label for="email" class="block text-sm font-semibold text-gray-900">邮箱地址</label>
           <div class="mt-2.5">
-            <input type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
         <div class="sm:col-span-2">
           <label for="password" class="block text-sm font-semibold text-gray-900">输入密码</label>
           <div class="mt-2.5">
-            <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.password" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
