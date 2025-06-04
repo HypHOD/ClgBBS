@@ -8,6 +8,8 @@ import SignIn from "./SignIn.vue";
 import OperationBar from "./OperationBar.vue";
 import axios from 'axios';
 import { useRouter , RouterView , RouterLink } from 'vue-router';
+import FileList from "@/components/FileList.vue";
+import GroupList from "@/components/GroupList.vue";
 
 const router = useRouter();
 
@@ -151,10 +153,10 @@ const tab = ref('Post')
             <PostList></PostList>
           </v-tabs-window-item>
           <v-tabs-window-item value="File">
-            NULL
+            <FileList></FileList>
           </v-tabs-window-item>
           <v-tabs-window-item value="Group">
-            NULL
+            <GroupList></GroupList>
           </v-tabs-window-item>
         </v-tabs-window>
       </v-container>

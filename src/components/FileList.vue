@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import GroupItem from './GroupItem.vue'
+import TextTest from "./TextTest.vue";
+import FileItem from "./FileItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
@@ -110,7 +111,7 @@ const chips = ref(['Default'])
                 width="100%"
                 class="hover-effect"
                 @click="handleClick(item)"
-            ><GroupItem></GroupItem></v-sheet>
+            ><FileItem></FileItem></v-sheet>
           </v-container>
         </v-infinite-scroll>
       </v-container>

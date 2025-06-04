@@ -156,11 +156,6 @@ const chips = ref(['Default'])
     </v-row>
   </v-container>
 
-
-
-
-
-
 </template>
 
 <style scoped>
