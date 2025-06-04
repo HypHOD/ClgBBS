@@ -1,33 +1,49 @@
 <script setup lang="ts">
-  import SignIn from "./SignIn.vue";
-  import { ref } from "vue";
-  const showSignInDialog = ref(false);
-  const isAuthenticated = ref(false);
-  function SignInDialog() {
-    showSignInDialog.value = !showSignInDialog.value;
-  }
+  import { ref, onMounted } from "vue";
+  import { useRouter } from "vue-router";
+  import { useSignInStore } from "@/store/signIn";
+
+  const router = useRouter();
+  const signInStore = useSignInStore();
+
+  const uid = ref("");
+  const form = ref({
+    email: "",
+    name: "",
+    uid: "",
+  });
+
+  onMounted(async () => {
+    form.value.email = signInStore.email
+    // 向服务器请求用户信息
+    // 成功后更新userInfo
+    if (signInStore.email) {
+      await signInStore.fetchUserInfo()
+      console.log('成功获取用户信息', signInStore.email, signInStore.userInfo.uid)
+    }else{
+      console.log('获取用户信息失败')
+    }
+  })
+
+
 </script>
 
 <template>
-  <v-container class="mx-auto bg-white rounded-lg flex">
-    <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="200" class="mx-1">
-      <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/personal-homepage/:uid')">
-    </v-sheet>
-    <div class=" items-center p-4">
-<!--      <img src="https://picsum.photos/50" alt="User Avatar" class="w-10 h-10 square mr-4"/>-->
-<!--      <span class="text-lg font-bold">用户名</span>-->
-<!--      <v-btn color="primary" to="/sign-in" class="ml-auto" @click="showSignInDialog=true">Sign in</v-btn>-->
-<!--      <v-btn color="primary" class="ml-auto" @click="SignInDialog()">Sign in</v-btn>-->
-<!--      <v-container class="ml-auto">-->
-<!--&lt;!&ndash;        <SignIn v-if="showSignInDialog" @close="showSignInDialog=false"/>&ndash;&gt;-->
-<!--      </v-container>-->
-    </div>
+  <v-container class="mx-auto bg-white rounded-lg h-auto">
+    <v-row>
+      <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="200" class="mx-1">
+<!--        <img src="服务器返回的用户头像" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/personal-homepage/:uid')">-->
+        <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/personal-homepage/:uid')">
+        </v-sheet>
+    </v-row>
+    <v-row>
+      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="200" class="mx-1">
+          <v-chip>
+            UID:{{form.uid}}
+          </v-chip>
+      </v-sheet>
+    </v-row>
   </v-container>
-
-  <v-container v-if="showSignInDialog" class="mx-auto bg-white rounded-lg flex mt-1">
-    <SignIn class="position-static z-20"/>
-  </v-container>
-
 </template>
 
 <style scoped>

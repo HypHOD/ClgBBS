@@ -78,13 +78,6 @@ const tab = ref('Post')
         </v-row>
         <v-row>
           <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 w-full">
-            <v-chip>
-              UID:1234567890
-            </v-chip>
-          </v-card>
-        </v-row>
-        <v-row>
-          <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 w-full">
             <v-btn color="primary" block class="w-full rounded-lg my-1" @click="">发帖</v-btn>
             <v-btn color="primary" to="/create-group" block class="w-full rounded-lg my-1">加入群组</v-btn>
           </v-card>

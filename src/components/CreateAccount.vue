@@ -30,7 +30,7 @@ const handleSubmit = async () => {
     await createAccountStore.createAccount()
 
     // 跳转到登录页面
-    if (createAccountStore.isSuccess) {
+    if (createAccountStore.success) {
       alert('注册成功')
       await router.push('/app-layout')
     } else {

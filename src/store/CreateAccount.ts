@@ -4,7 +4,6 @@ export const useCreateAccountStore = defineStore('createAccount', {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
     error: '',
     success: false,
     loading: false,
@@ -39,7 +38,6 @@ export const useCreateAccountStore = defineStore('createAccount', {
       this.name = ''
       this.email = ''
       this.password = ''
-      this.confirmPassword = ''
       this.error = ''
       this.success = false
       this.loading = false
