@@ -149,7 +149,7 @@ const chips = ref(['Default'])
                 width="100%"
                 class="hover-effect"
                 @click="handleClick(item)"
-            ><PostItem :postClassify="item.postClassify" :id="item.id" :content="item.content" :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
+            ><PostItem :where="'post-list'"/></v-sheet>
           </v-container>
         </v-infinite-scroll>
       </v-container>

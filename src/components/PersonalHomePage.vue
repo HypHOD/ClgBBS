@@ -2,6 +2,8 @@
 import PersonalPost from "@/components/PersonalPost.vue";
 import {ref, onMounted, shallowRef} from 'vue'
 import { useSignInStore } from '@/store/SignIn.ts';
+import PostItem from "@/components/PostItem.vue";
+import FileItem from "@/components/FileItem.vue";
 
 const uid = useSignInStore().userInfo.uid;
 
@@ -66,31 +68,24 @@ const loadMore = () => {
       <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="200" class="mx-1">
 <!--        点击修改个人信息-->
         <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/profile')">
-        <v-chip>
-          UID:{{uid}}
-        </v-chip>
       </v-sheet>
 
       <v-sheet border="dashed md" color="surface-light" rounded="lg" width="200" class="mx-1 h-screen mt-2" height="auto">
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block @click="handleClick('PersonalPost')">
-          <v-icon>mdi mdi-card-bulleted</v-icon>
-          <span class="ml-2">我的帖子</span>
+        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
+          <v-icon>mdi-arrow-left-bottom</v-icon>
+          <span class="ml-2">UID:{{uid}}</span>
         </v-btn>
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block @click="handleClick('TextTest')">
-          <v-icon>mdi mdi-cards-heart</v-icon>
-          <span class="ml-2">我的收藏</span>
+        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block >
+          <span class="ml-2">动态管理</span>
         </v-btn>
         <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
           <v-icon>mdi-arrow-left-bottom</v-icon>
           <span class="ml-2">文件管理</span>
         </v-btn>
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
-          <v-icon>mdi-arrow-left-bottom</v-icon>
-          <span class="ml-2">我的社群</span>
-        </v-btn>
+
         <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
           <v-icon>mdi mdi-card-account-details-outline</v-icon>
-          <span class="ml-2">个人信息</span>
+          <span class="ml-2">修改个人信息</span>
         </v-btn>
       </v-sheet>
     </v-container>
@@ -105,13 +100,13 @@ const loadMore = () => {
             <v-sheet
                 border="dashed md"
                 color="surface-light"
-                height="150"
+                height="auto"
                 rounded="lg"
-                width="100%"
+                width="auto"
                 class="hover-effect"
             >
-              <v-chip class="ml-2 mt-2">postId:{{item.postId}}</v-chip>
-              <PersonalPost :index="index" :item="item"/>
+<!--              <PersonalPost :index="index" :item="item"/>-->
+              <PostItem :where="'homepage'"></PostItem>
             </v-sheet>
           </v-container>
         <v-pagination
@@ -130,14 +125,13 @@ const loadMore = () => {
               <v-sheet
                   border="dashed md"
                   color="surface-light"
-                  height="150"
+                  height="auto"
                   rounded="lg"
-                  width="100%"
+                  width="auto"
                   class="hover-effect"
                   @click="$router.push('/file-manager/{{item_file.id}}')"
               >
-                <v-chip class="ml-2 mt-2">fileId:{{item_file.fileId}}</v-chip>
-                <p>{{item_file.content}}</p>
+                <FileItem></FileItem>
               </v-sheet>
             </v-col>
           </v-row>
