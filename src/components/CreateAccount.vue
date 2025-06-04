@@ -1,14 +1,48 @@
 <script setup lang="ts" name="ForgetPassword">
 import { useRouter } from 'vue-router'
-import {SwitchLabel} from "@headlessui/vue";
 import {ref, onMounted, shallowRef} from 'vue'
+import { useCreateAccountStore } from "@/store/CreateAccount.ts";
 
 
 const router = useRouter()
+const createAccountStore = useCreateAccountStore()
 
-const handleSubmit = () => {
+const form = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  isConfirmed: false
+})
+
+const handleSubmit = async () => {
   // 这里可以添加表单验证逻辑
-  router.push('/app-layout') // 假设主页面的路由是 /main-page
+  try{
+    if (form.value.password!== form.value.confirmPassword) {
+      alert('两次输入的密码不一致')
+      return
+    }
+
+    // 调用 store 中的 createAccount 方法
+    createAccountStore.name = form.value.name
+    createAccountStore.email = form.value.email
+    createAccountStore.password = form.value.password
+    await createAccountStore.createAccount()
+
+    // 跳转到登录页面
+    if (createAccountStore.isSuccess) {
+      alert('注册成功')
+      await router.push('/app-layout')
+    } else {
+      alert('注册失败')
+    }
+  }catch(error){
+    console.error(error)
+    alert('注册失败')
+  }
+
+
+  // router.push('/app-layout') // 假设主页面的路由是 /main-page
 }
 
 const checkbox = ref(false)
@@ -27,29 +61,36 @@ const checkbox = ref(false)
       <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
 
         <div class="sm:col-span-2">
+          <label for="username" class="block text-sm font-semibold text-gray-900">用户名</label>
+          <div class="mt-2.5">
+            <input v-model="form.name" type="text" name="username" id="text" autocomplete="username" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+          </div>
+        </div>
+
+        <div class="sm:col-span-2">
           <label for="email" class="block text-sm font-semibold text-gray-900">邮箱地址</label>
           <div class="mt-2.5">
-            <input type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
         <div class="sm:col-span-2">
           <label for="password" class="block text-sm font-semibold text-gray-900">输入密码</label>
           <div class="mt-2.5">
-            <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.password" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
         <div class="sm:col-span-2">
           <label for="password" class="block text-sm font-semibold text-gray-900">再次输入密码</label>
           <div class="mt-2.5">
-            <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.confirmPassword" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
       </div>
 
       <v-container fluid>
-        <v-checkbox v-model="checkbox">
+        <v-checkbox v-model="form.isConfirmed">
           <template v-slot:label>
             <div>
               勾选表示同意
