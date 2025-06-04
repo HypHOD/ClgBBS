@@ -120,9 +120,5 @@ const chips = ref(['Default'])
 </template>
 
 <style scoped>
-.hover-effect:hover {
-  background-color: #e0f7fa; /* Light blue background on hover */
-  cursor: pointer; /* Change cursor to pointer on hover */
-  outline: dashed 5px #706ccb;
-}
+
 </style>

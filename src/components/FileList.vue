@@ -8,26 +8,7 @@ import { useSignInStore } from '@/store/SignIn.ts';
 
 const router = useRouter();
 const signInStore = useSignInStore();
-const newPost= reactive({
-  postTitle: '',
-  postContent: '',
-  uid: '',
-  isAnonymous: false
-});
 
-const handleSubmit = () => {
-  // 发送请求
-  if (!newPost.isAnonymous){
-    newPost.uid = signInStore.userInfo.uid;
-  }
-  axios.post('/api/post', newPost).then(res => {
-    console.log(res.data);
-    // 刷新页面
-    router.push('/post-list');
-  }).catch(err => {
-    console.log(err);
-  });
-}
 
 // 模拟数据数组
 const items = ref([
@@ -76,11 +57,58 @@ const breadcrumbs = [
   }
 ]
 const chips = ref(['Default'])
+const dialog = ref(false);
 
 </script>
 
 <template>
   <v-container>
+    <v-row>
+      <v-col>
+        <v-file-input
+            label="File input"
+            multiple
+        ></v-file-input>
+      </v-col>
+      <v-col>
+        <v-btn class="bg-blue hover-effect" @click="dialog = true">
+          <v-icon>mdi-comment-text-outline</v-icon>
+          编辑信息
+        </v-btn>
+      </v-col>
+    </v-row>
+<!--    编辑信息弹窗-->
+    <v-dialog v-model="dialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">编辑信息</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col>
+              <v-text-field label="标题" v-model="title"></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field label="描述" v-model="description"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field label="标签" v-model="tags"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field label="分类" v-model="classify"></v-text-field>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text @click="dialog = false">取消</v-btn>
+          <v-btn text @click="dialog = false">确定</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row>
       <v-container class="bg-gray-100">
         <v-combobox
@@ -117,7 +145,6 @@ const chips = ref(['Default'])
       </v-container>
     </v-row>
   </v-container>
-
 </template>
 
 <style scoped>
