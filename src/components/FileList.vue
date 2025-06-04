@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import TextTest from "./TextTest.vue";
+import TextTest from "./PostItem.vue";
 import FileItem from "./FileItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';

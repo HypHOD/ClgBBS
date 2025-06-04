@@ -60,7 +60,7 @@ const router = createRouter({
             component: () => import('../components/ForgetPassword.vue')
         },
         {
-            path: '/post-detail/:id',
+            path: '/post-detail/:uid',
             name: 'PostDetail',
             component: () => import('../components/PostDetail.vue')
         },

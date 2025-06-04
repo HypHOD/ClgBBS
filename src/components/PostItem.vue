@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import PersonalPost from "@/components/PersonalPost.vue";
 const postContent = ref('');
 const displayText = ref('');
-// const isBlurred = ref(false);
-
 
 setTimeout(() => {
   postContent.value = '服务器帖子内容示例，';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {reactive, ref, shallowRef} from 'vue'
-import TextTest from "./TextTest.vue";
+import TextTest from "./PostItem.vue";
 import UserInfo from "./UserInfo.vue";
 import PostList from "./PostList.vue";
 import PostDetail from "./PostDetail.vue";

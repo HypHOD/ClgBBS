@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import TextTest from "./TextTest.vue";
+import PostItem from "./PostItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
@@ -149,7 +149,7 @@ const chips = ref(['Default'])
                 width="100%"
                 class="hover-effect"
                 @click="handleClick(item)"
-            ><TextTest :postClassify="item.postClassify" :id="item.id" :content="item.content" :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
+            ><PostItem :postClassify="item.postClassify" :id="item.id" :content="item.content" :index="index" :item="item" :isBlurred="item.isBlurred"/></v-sheet>
           </v-container>
         </v-infinite-scroll>
       </v-container>

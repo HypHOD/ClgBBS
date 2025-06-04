@@ -35,7 +35,7 @@
     <v-row>
       <v-sheet border="dashed md" color="surface-light" height="200" rounded="lg" width="200" class="mx-1">
 <!--        <img src="服务器返回的用户头像" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/personal-homepage/:uid')">-->
-        <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/personal-homepage/:uid')">
+        <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push(`/personal-homepage/${form.uid}`)">
         </v-sheet>
     </v-row>
     <v-row>

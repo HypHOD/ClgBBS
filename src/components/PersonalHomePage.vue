@@ -1,44 +1,18 @@
 <script setup lang="ts">
 import PersonalPost from "@/components/PersonalPost.vue";
-import TextTest from "@/components/TextTest.vue";
 import {ref, onMounted, shallowRef} from 'vue'
+import { useSignInStore } from '@/store/SignIn.ts';
+
+const uid = useSignInStore().userInfo.uid;
 
 const UserPosts = fetch('https://jsonplaceholder.typicode.com/posts')
     .then(response => response.json())
     .then(data => data.slice(0, 10))
     .catch(error => console.error(error));
 
-// 状态跟踪当前选中的组件
-const currentComponent = ref('')
-
 // 模拟分页
 const page = ref(1)
 const pages_number = ref(10)
-// const pages_number = computed(() => {
-//   return Math.ceil(UserPosts.length / itemsPerLoad)
-// })
-
-// 预定义组件映射
-const componentsMap = {
-  'PersonalPost': PersonalPost,
-  'TextTest': TextTest
-}
-
-// // 组件挂载后默认显示第一个组件
-// onMounted(() => {
-//   currentComponent.value = 'PersonalPost'
-// })
-//
-// // 处理按钮点击并更新当前组件
-// const handleClick = (componentName: string) => {
-//   if (componentsMap[componentName]) {
-//     currentComponent.value = componentName
-//   } else {
-//     console.error('未找到组件:', componentName)
-//   }
-// }
-//
-// const order = shallowRef(0)
 
 // 模拟数据数组
 const items = ref([
@@ -82,7 +56,7 @@ const loadMore = () => {
   <div class="flex">
     <!-- 侧边栏 -->
     <div>
-      <v-btn @click="$router.push('/')" variant="outlined" class="h-screen hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
+      <v-btn @click="$router.push('/app-layout')" variant="outlined" class="h-screen hover:bg-violet-600 active:bg-violet-700 focus:outline-dash focus:ring focus:ring-violet-300">
         <v-icon>mdi-arrow-left-bottom</v-icon>
       </v-btn>
     </div>
@@ -93,15 +67,9 @@ const loadMore = () => {
 <!--        点击修改个人信息-->
         <img src="@/assets/cdm.jpg" alt="个人头像" class="rounded-lg w-full h-full object-cover hover-effect" @click="$router.push('/profile')">
         <v-chip>
-          UID:{{ID}}
+          UID:{{uid}}
         </v-chip>
       </v-sheet>
-
-<!--      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="200" class="mx-1">-->
-<!--        <v-card class="mt-2 bg-white rounded-lg w-full h-full">-->
-<!--          <v-card-title>ID:{{ID}}</v-card-title>-->
-<!--        </v-card>-->
-<!--      </v-sheet>-->
 
       <v-sheet border="dashed md" color="surface-light" rounded="lg" width="200" class="mx-1 h-screen mt-2" height="auto">
         <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block @click="handleClick('PersonalPost')">
