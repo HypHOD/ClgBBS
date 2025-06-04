@@ -25,7 +25,6 @@
     }catch (error){
       console.log('获取用户信息失败')
     }
-
   })
 
 
