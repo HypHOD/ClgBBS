@@ -14,15 +14,18 @@
   });
 
   onMounted(async () => {
-    form.value.email = signInStore.email
-    // 向服务器请求用户信息
-    // 成功后更新userInfo
-    if (signInStore.email) {
-      await signInStore.fetchUserInfo()
-      console.log('成功获取用户信息', signInStore.email, signInStore.userInfo.uid)
-    }else{
+    try{
+      form.value.email = signInStore.email
+      // 向服务器请求用户信息
+      // 成功后更新userInfo
+      if (signInStore.email) {
+        await signInStore.fetchUserInfo()
+        console.log('成功获取用户信息', signInStore.email, signInStore.userInfo.uid)
+      }
+    }catch (error){
       console.log('获取用户信息失败')
     }
+
   })
 
 
