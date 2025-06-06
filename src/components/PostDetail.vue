@@ -193,7 +193,7 @@ const submitComment = () => {
                 发布时间:{{ head[0].creatTime }}
               </v-chip>
               <v-chip>
-                主题帖ID:{{ postId }}
+                群组标签:{{ postId }}
               </v-chip>
             </v-card-actions>
           </v-sheet>

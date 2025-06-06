@@ -59,103 +59,93 @@ const handleClick = (item) => {
 }
 
 const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
-const breadcrumbs = [
-  {
-    title: 'Dashboard',
-    href: 'breadcrumbs_dashboard'
-  },
-  {
-    title: 'Link 1',
-    href: 'breadcrumbs_link_1'
-  },
-  {
-    title: 'Link 2',
-    href: 'breadcrumbs_link_2',
-    disabled: false
-  }
-]
+
 const chips = ref(['Default'])
 
 </script>
 
 <template>
-  <v-container>
-    <v-row>
-      <v-container>
-        <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 my-1">
-          <v-input>
-            <v-container class="h-auto">
-              <v-row>
-                <v-text-field
-                    v-model="newPost.postTitle"
-                    label="输入标题"
-                    outlined
-                    dense
-                    clearable
-                    class="mx-1 mt-1 h-100"
-                    variant="outlined"
-                    bg-color="white"
-                ></v-text-field>
 
-              </v-row>
-              <v-row>
-                <v-textarea
-                    v-model="newPost.postContent"
-                    label="输入正文"
-                    row-height="15"
-                    rows="3"
-                    variant="outlined"
-                    auto-grow
-                    clearable
-                    bg-color="white"
-                ></v-textarea>
-              </v-row>
-              <v-row>
-                <v-combobox
-                    v-model="chips"
-                    :items="tips"
-                    label="选择群组标签"
-                    variant="solo"
-                    chips
-                    clearable
-                    closable-chips
-                    multiple
-                >
-                  <template v-slot:chip="{ props, item }">
-                    <v-chip v-bind="props">
-                      <strong>{{ item.raw }}</strong>&nbsp;
-                      <span>(默认时间倒叙)</span>
-                    </v-chip>
-                  </template>
-                </v-combobox>
-              </v-row>
-              <v-row class="flex-column">
-                <v-btn color="primary" @click="handleSubmit" class="left-0">发布</v-btn>
-              </v-row>
-            </v-container>
-          </v-input>
-        </v-sheet>
-      </v-container>
-    </v-row>
-    <v-row>
-      <v-container class="bg-gray-100">
-        <v-infinite-scroll  @load="loadMore" :items="items" >
-          <v-container v-for="(item, index) in items" :key="index" :item="item">
-            <v-sheet
-                border="dashed md"
-                color="surface-light"
-                height="200"
-                rounded="lg"
-                width="100%"
-                class="hover-effect"
-                @click="handleClick(item)"
-            ><PostItem :where="'post-list'"/></v-sheet>
-          </v-container>
-        </v-infinite-scroll>
-      </v-container>
-    </v-row>
-  </v-container>
+  <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
+    <v-container>
+      <v-row>
+        <v-container>
+          <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 my-1">
+            <v-input>
+              <v-container class="h-auto">
+                <v-row>
+                  <v-text-field
+                      v-model="newPost.postTitle"
+                      label="输入标题"
+                      outlined
+                      dense
+                      clearable
+                      class="mx-1 mt-1 h-100"
+                      variant="outlined"
+                      bg-color="white"
+                  ></v-text-field>
 
+                </v-row>
+                <v-row>
+                  <v-textarea
+                      v-model="newPost.postContent"
+                      label="输入正文"
+                      row-height="15"
+                      rows="3"
+                      variant="outlined"
+                      auto-grow
+                      clearable
+                      bg-color="white"
+                  ></v-textarea>
+                </v-row>
+                <v-row>
+                  <v-combobox
+                      v-model="chips"
+                      :items="tips"
+                      label="选择群组标签"
+                      variant="solo"
+                      chips
+                      clearable
+                      closable-chips
+                      multiple
+                  >
+                    <template v-slot:chip="{ props, item }">
+                      <v-chip v-bind="props">
+                        <strong>{{ item.raw }}</strong>&nbsp;
+                        <span>(默认时间倒叙)</span>
+                      </v-chip>
+                    </template>
+                  </v-combobox>
+                </v-row>
+                <v-row class="flex-column">
+                  <v-btn color="primary" @click="handleSubmit">发布</v-btn>
+                </v-row>
+              </v-container>
+            </v-input>
+          </v-sheet>
+        </v-container>
+      </v-row>
+      <v-row>
+        <v-container>
+          <v-row justify="center">
+            <v-infinite-scroll  @load="loadMore" :items="items">
+              <v-container v-for="(item, index) in items" :key="index" :item="item">
+                <v-sheet
+                    border="dashed md"
+                    color="surface-light"
+                    height="200"
+                    rounded="lg"
+                    width="750"
+                    class="hover-effect mx-0"
+                    @click="handleClick(item)"
+                ><PostItem :where="'post-list'"/></v-sheet>
+              </v-container>
+            </v-infinite-scroll>
+          </v-row>
+        </v-container>
+      </v-row>
+    </v-container>
+  </v-parallax>
 </template>
 
 <style scoped>
@@ -164,7 +154,5 @@ const chips = ref(['Default'])
   cursor: pointer; /* Change cursor to pointer on hover */
   outline: dashed 5px #706ccb;
 }
-
-
 
 </style>

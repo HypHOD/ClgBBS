@@ -10,43 +10,41 @@ setTimeout(() => {
 
 defineProps(['where'])
 
+const groupTag = ref(['群组1', '群组2', '群组3'])
 </script>
 
 <template>
-  <v-container class="d-flex flex-col fill-width bg-blue hover-effect1">
+  <v-container class="d-flex flex-col fill-width hover-effect1">
       <v-row>
-        <v-col cols="2" v-if = "where === 'post-list'" >
-          <v-row >
-            <img
-                src="@/assets/cdm.jpg"
-                alt="User Avatar"
-                class="w-35 rounded mr-2 "
-            />
+        <v-col v-if = "where === 'post-list'" cols="3" >
+          <img
+              src="@/assets/cdm.jpg"
+              alt="User Avatar"
+              class="w-35 rounded mr-2 "
+          />
+        </v-col>
+        <v-col>
+          <v-row>
+            <v-sheet
+                border="dashed md"
+                color="surface-light"
+                height="150"
+                rounded="lg"
+                width="100%"
+                class="opacity-100"
+            >
+              {{displayText}}
+            </v-sheet>
           </v-row>
           <v-row>
             <v-chip
-                class="height-40"
-            >UID:{{}}</v-chip>
+                label
+                v-for="tag in groupTag"
+                color="black"
+                class="height-40 ma-1"
+                :key="tag">{{tag}}
+            </v-chip>
           </v-row>
-        </v-col>
-        <v-col cols="6"
-        >
-              <v-sheet
-                  border="dashed md"
-                  color="surface-light"
-                  height="150"
-                  rounded="lg"
-                  width="100%"
-
-              >
-                {{displayText}}
-              </v-sheet>
-        </v-col>
-        <v-col cols="3" class="bg-gray-200 text-center text-black">
-          <v-chip class="height-40">发帖时间:</v-chip>
-          <v-chip class="height-40">回复数:</v-chip>
-          <v-chip class="height-40">PID:</v-chip>
-          <v-chip class="height-40">所属群组:</v-chip>
         </v-col>
       </v-row>
   </v-container>

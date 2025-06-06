@@ -69,6 +69,8 @@ const handleClick = (item) => {
 }
 
 const tab = ref('Post')
+
+
 </script>
 
 <template>
@@ -121,7 +123,7 @@ const tab = ref('Post')
         </v-btn>
         <v-btn value="nearby">
           <v-badge
-              :content="1"
+              :content="UserInfo.unread"
               :absolute="true"
               :right="0"
               :top="0"

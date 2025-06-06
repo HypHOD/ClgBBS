@@ -1,240 +1,174 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
+import PostItem from "./PostItem.vue";
+import axios from 'axios';
+import { useRouter  } from 'vue-router';
+import { useSignInStore } from '@/store/SignIn.ts';
+
+const router = useRouter();
+const signInStore = useSignInStore();
+const newPost= reactive({
+  postTitle: '',
+  postContent: '',
+  uid: '',
+  isAnonymous: false
+});
+
+const handleSubmit = () => {
+  // 发送请求
+  if (!newPost.isAnonymous){
+    newPost.uid = signInStore.userInfo.uid;
+  }
+  axios.post('/api/post', newPost).then(res => {
+    console.log(res.data);
+    // 刷新页面
+    router.push('/post-list');
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
+// 模拟数据数组
+const items = ref([
+  { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
+  { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
+  { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
+  { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
+]);
+
+// 模拟每次加载的数据数量
+const itemsPerLoad = 3;
+
+// 加载更多数据的方法
+const loadMore = () => {
+  // 模拟异步加载数据
+  setTimeout(() => {
+    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
+      id: items.value.length + i + 1,
+      content: `Item ${items.value.length + i + 1}`,
+    }));
+    items.value = [...items.value, ...newItems];
+  }, 1000);
+};
+
+
+const handleClick = (item) => {
+  console.log(item)
+  // 跳转到详情页
+  router.push('/post-detail/' + item.id);
+}
+
+const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
+const breadcrumbs = [
+  {
+    title: 'Dashboard',
+    href: 'breadcrumbs_dashboard'
+  },
+  {
+    title: 'Link 1',
+    href: 'breadcrumbs_link_1'
+  },
+  {
+    title: 'Link 2',
+    href: 'breadcrumbs_link_2',
+    disabled: false
+  }
+]
+const chips = ref(['Default'])
 
 </script>
 
 <template>
-  <div class="container">
-    <div class="box">
-      <span></span>
-      <div class="content">
-        <h2>Card one</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <a href="#">Read More</a>
-      </div>
-    </div>
 
-    <div class="box">
-      <span></span>
-      <div class="content">
-        <h2>Card two</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <a href="#">Read More</a>
-      </div>
-    </div>
+  <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
+    <v-container>
+      <v-row>
+        <v-container>
+          <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 my-1">
+            <v-input>
+              <v-container class="h-auto">
+                <v-row>
+                  <v-text-field
+                      v-model="newPost.postTitle"
+                      label="输入标题"
+                      outlined
+                      dense
+                      clearable
+                      class="mx-1 mt-1 h-100"
+                      variant="outlined"
+                      bg-color="white"
+                  ></v-text-field>
 
-    <div class="box">
-      <span></span>
-      <div class="content">
-        <h2>Card Three</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <a href="#">Read More</a>
-      </div>
-    </div>
-  </div>
+                </v-row>
+                <v-row>
+                  <v-textarea
+                      v-model="newPost.postContent"
+                      label="输入正文"
+                      row-height="15"
+                      rows="3"
+                      variant="outlined"
+                      auto-grow
+                      clearable
+                      bg-color="white"
+                  ></v-textarea>
+                </v-row>
+                <v-row>
+                  <v-combobox
+                      v-model="chips"
+                      :items="tips"
+                      label="选择群组标签"
+                      variant="solo"
+                      chips
+                      clearable
+                      closable-chips
+                      multiple
+                  >
+                    <template v-slot:chip="{ props, item }">
+                      <v-chip v-bind="props">
+                        <strong>{{ item.raw }}</strong>&nbsp;
+                        <span>(默认时间倒叙)</span>
+                      </v-chip>
+                    </template>
+                  </v-combobox>
+                </v-row>
+                <v-row class="flex-column">
+                  <v-btn color="primary" @click="handleSubmit" class="left-0">发布</v-btn>
+                </v-row>
+              </v-container>
+            </v-input>
+          </v-sheet>
+        </v-container>
+      </v-row>
+      <v-row>
+        <v-container>
+          <v-row justify="end">
+            <v-infinite-scroll  @load="loadMore" :items="items">
+              <v-container v-for="(item, index) in items" :key="index" :item="item">
+                <v-sheet
+                    border="dashed md"
+                    color="surface-light"
+                    height="200"
+                    rounded="lg"
+                    width="600"
+                    class="hover-effect mx-0"
+                    @click="handleClick(item)"
+                ><PostItem :where="'post-list'"/></v-sheet>
+              </v-container>
+            </v-infinite-scroll>
+          </v-row>
+        </v-container>
+      </v-row>
+    </v-container>
+  </v-parallax>
 </template>
 
 <style scoped>
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.hover-effect:hover {
+  background-color: #e0f7fa; /* Light blue background on hover */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  outline: dashed 5px #706ccb;
 }
 
-body{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #131417;
-  background-image: linear-gradient(315deg, #131417 0%, #1e1f26 74%);
-}
 
-.container{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 40px 0;
-}
 
-.box{
-  position: relative;
-  display: flex;
-  width: 320px;
-  height: 400px;
-  justify-content: center;
-  align-items: center;
-  margin: 40px 30px;
-  transition: 0.5s;
-}
-
-.content{
-  position: relative;
-  left: 0;
-  padding: 20px 40px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  z-index: 1;
-  transition: 0.5s;
-}
-
-.content h2{
-  font-size: 2em;
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-.content p{
-  font-size: 1.1em;
-  margin-bottom: 10px;
-  line-height: 1.4em;
-}
-
-.content a{
-  display: inline-block;
-  font-size: 1.1em;
-  color: #111;
-  background: #fff;
-  padding: 10px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 700;
-  margin-top: 5px;
-  transition: 0.6s;
-}
-
-.box:hover .content{
-  left: -25px;
-  padding: 60px 40px;
-}
-
-.content a:hover{
-  background: #222;
-  color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 15px #222;
-}
-
-.box::before{
-  content: "";
-  position: absolute;
-  background: #fff;
-  top: 0;
-  left: 50px;
-  width: 50%;
-  height: 100%;
-  text-decoration: none;
-  border-radius: 8px;
-  transform: skewX(15deg);
-  transition: 0.5s;
-}
-
-.box::after{
-  content: "";
-  position: absolute;
-  background: #fff;
-  top: 0;
-  left: 50px;
-  width: 50%;
-  height: 100%;
-  border-radius: 8px;
-  transform: skewX(15deg);
-  filter: blur(30px);
-  transition: 0.5s;
-}
-
-.box:hover::before,
-.box:hover::after{
-  transform: skewX(0deg);
-  left: 20px;
-  width: calc(100% - 90px);
-}
-
-.box:nth-child(1)::before,
-.box:nth-child(1)::after{
-  background: linear-gradient(315deg, #ffbc00, #ff0058);
-}
-
-.box:nth-child(2):before,
-.box:nth-child(2):after{
-  background: linear-gradient(315deg, #03a9f4, #ff0058);
-}
-
-.box:nth-child(3):before,
-.box:nth-child(3):after{
-  background: linear-gradient(315deg, #4dff03, #00d0ff);
-}
-
-.box span{
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.box span::before{
-  content: "";
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  transition: 0.3s;
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  animation: animate 2s ease-in-out infinite;
-}
-
-.box:hover span::before{
-  opacity: 1;
-  top: -50px;
-  left: 50px;
-  width: 100px;
-  height: 100px;
-}
-
-.box span::after{
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  opacity: 0;
-  transition: 0.5s;
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  animation: animate 2s ease-in-out infinite;
-  animation-delay: -1s;
-}
-
-.box:hover span::after{
-  bottom: -50px;
-  right: 50px;
-  width: 100px;
-  height: 100px;
-  opacity: 1;
-}
-
-@keyframes animate {
-  0%,
-  100% {
-    transform: translateY(10px);
-  }
-  50% {
-    transform: translate(-10px);
-  }
-}
 </style>
