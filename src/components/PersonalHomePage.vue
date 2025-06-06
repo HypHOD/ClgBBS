@@ -4,6 +4,7 @@ import {ref, onMounted, shallowRef} from 'vue'
 import { useSignInStore } from '@/store/SignIn.ts';
 import PostItem from "@/components/PostItem.vue";
 import FileItem from "@/components/FileItem.vue";
+import UserState from "@/components/UserState.vue";
 
 const uid = useSignInStore().userInfo.uid;
 
@@ -42,18 +43,10 @@ const loadMore = () => {
   }, 1000);
 };
 
-
+const tab = ref('option-3');
 </script>
 
 <template>
-  <v-card class="mx-auto bg-blue rounded-lg">
-    <v-card-title>
-      <h2 class="text-xl font-bold text-gray-800">Welcome to your Personal Home Page</h2>
-    </v-card-title>
-    <v-card-text>
-      <h2 class="text-xl font-bold text-gray-800">个人主页上边栏</h2>
-    </v-card-text>
-  </v-card>
 
   <div class="flex">
     <!-- 侧边栏 -->
@@ -71,76 +64,68 @@ const loadMore = () => {
       </v-sheet>
 
       <v-sheet border="dashed md" color="surface-light" rounded="lg" width="200" class="mx-1 h-screen mt-2" height="auto">
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
-          <v-icon>mdi-arrow-left-bottom</v-icon>
-          <span class="ml-2">UID:{{uid}}</span>
-        </v-btn>
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block >
-          <span class="ml-2">动态管理</span>
-        </v-btn>
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
-          <v-icon>mdi-arrow-left-bottom</v-icon>
-          <span class="ml-2">文件管理</span>
-        </v-btn>
-
-        <v-btn class="text-none mt-2" color="secondary" size="x-large" variant="outlined" block>
-          <v-icon>mdi mdi-card-account-details-outline</v-icon>
-          <span class="ml-2">修改个人信息</span>
-        </v-btn>
+        <v-tabs
+            v-model="tab"
+            color="primary"
+            direction="vertical"
+        >
+          <v-tab prepend-icon="mdi-account" text="Post" value="option-1"></v-tab>
+          <v-tab prepend-icon="mdi-lock" text="File" value="option-2"></v-tab>
+          <v-tab prepend-icon="mdi-access-point" text="State" value="option-3"></v-tab>
+        </v-tabs>
       </v-sheet>
     </v-container>
 
     <!-- 主内容区 -->
     <v-container class="mt-2 ml-2 flex-grow-1 bg-blue-100 rounded-lg">
-
       <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-2 ">
-        <h2 class="text-xl font-bold text-gray-800 ">历史动态</h2>
+        <v-tabs-window v-model="tab" >
+          <v-tabs-window-item value="option-1" >
+            <v-card flat>
+              <v-card-text>
+                // TODO: 个人动态
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
 
-          <v-container v-for="(item, index) in items" :key="index" :item="item">
-            <v-sheet
-                border="dashed md"
-                color="surface-light"
-                height="auto"
-                rounded="lg"
-                width="auto"
-                class="hover-effect"
-            >
-<!--              <PersonalPost :index="index" :item="item"/>-->
-              <PostItem :where="'homepage'"></PostItem>
-            </v-sheet>
-          </v-container>
-        <v-pagination
-            v-model="page"
-            :length="pages_number"
-            :total-visible="4"
-            class="my-4"
-        ></v-pagination>
+          <v-tabs-window-item value="option-2">
+            <v-card flat>
+              <v-card-text>
+                // TODO: 文件管理
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item >
+          <v-tabs-window-item value="option-3" >
+            <v-card flat>
+              <v-card-text>
+                <UserState></UserState>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
+        </v-tabs-window>
 
       </v-sheet>
 
-      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-2">
-        <v-container v-for="(item_file, index) in items_file" :key="index" :item="item_file">
-          <v-row>
-            <v-col >
-              <v-sheet
-                  border="dashed md"
-                  color="surface-light"
-                  height="auto"
-                  rounded="lg"
-                  width="auto"
-                  class="hover-effect"
-                  @click="$router.push('/file-manager/{{item_file.id}}')"
-              >
-                <FileItem></FileItem>
-              </v-sheet>
-            </v-col>
-          </v-row>
-
-        </v-container>
-      </v-sheet>
-
+<!--      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-2">-->
+<!--        <v-container v-for="(item_file, index) in items_file" :key="index" :item="item_file">-->
+<!--          <v-row>-->
+<!--            <v-col >-->
+<!--              <v-sheet-->
+<!--                  border="dashed md"-->
+<!--                  color="surface-light"-->
+<!--                  height="auto"-->
+<!--                  rounded="lg"-->
+<!--                  width="auto"-->
+<!--                  class="hover-effect"-->
+<!--                  @click="$router.push('/file-manager/{{item_file.id}}')"-->
+<!--              >-->
+<!--                <FileItem></FileItem>-->
+<!--              </v-sheet>-->
+<!--            </v-col>-->
+<!--          </v-row>-->
+<!--        </v-container>-->
+<!--      </v-sheet>-->
     </v-container>
-
   </div>
 </template>
 
@@ -150,4 +135,6 @@ const loadMore = () => {
   cursor: pointer;
   outline: dashed 5px #706ccb;
 }
+
+
 </style>
