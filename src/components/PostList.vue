@@ -88,7 +88,7 @@ const chips = ref(['Default'])
               <v-row>
                 <v-text-field
                     v-model="newPost.postTitle"
-                    label="请输入标题"
+                    label="输入标题"
                     outlined
                     dense
                     clearable
@@ -110,8 +110,26 @@ const chips = ref(['Default'])
                     bg-color="white"
                 ></v-textarea>
               </v-row>
+              <v-row>
+                <v-combobox
+                    v-model="chips"
+                    :items="tips"
+                    label="选择群组标签"
+                    variant="solo"
+                    chips
+                    clearable
+                    closable-chips
+                    multiple
+                >
+                  <template v-slot:chip="{ props, item }">
+                    <v-chip v-bind="props">
+                      <strong>{{ item.raw }}</strong>&nbsp;
+                      <span>(默认时间倒叙)</span>
+                    </v-chip>
+                  </template>
+                </v-combobox>
+              </v-row>
               <v-row class="flex-column">
-                <v-checkbox label="匿名" class="my-1 h-100" v-model="newPost.isAnonymous"></v-checkbox>
                 <v-btn color="primary" @click="handleSubmit" class="left-0">发布</v-btn>
               </v-row>
             </v-container>
@@ -121,24 +139,6 @@ const chips = ref(['Default'])
     </v-row>
     <v-row>
       <v-container class="bg-gray-100">
-        <v-combobox
-            v-model="chips"
-            :items="tips"
-            label="条件筛选"
-            variant="solo"
-            chips
-            clearable
-            closable-chips
-            multiple
-        >
-          <template v-slot:chip="{ props, item }">
-            <v-chip v-bind="props">
-              <strong>{{ item.raw }}</strong>&nbsp;
-              <span>(默认时间倒叙)</span>
-            </v-chip>
-          </template>
-        </v-combobox>
-        <hr>
         <v-infinite-scroll  @load="loadMore" :items="items" >
           <v-container v-for="(item, index) in items" :key="index" :item="item">
             <v-sheet
@@ -164,4 +164,7 @@ const chips = ref(['Default'])
   cursor: pointer; /* Change cursor to pointer on hover */
   outline: dashed 5px #706ccb;
 }
+
+
+
 </style>

@@ -1,49 +1,18 @@
 <script setup lang="ts">
-import PersonalPost from "@/components/PersonalPost.vue";
 import {ref, onMounted, shallowRef} from 'vue'
-import { useSignInStore } from '@/store/SignIn.ts';
-import PostItem from "@/components/PostItem.vue";
-import FileItem from "@/components/FileItem.vue";
 import UserState from "@/components/UserState.vue";
+import TestPage from "@/components/TestPage.vue";
 
-const uid = useSignInStore().userInfo.uid;
+const links = [
+  'Home',
+  'About Us',
+  'Team',
+  'Services',
+  'Blog',
+  'Contact Us',
+]
 
-const UserPosts = fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(data => data.slice(0, 10))
-    .catch(error => console.error(error));
-
-// 模拟分页
-const page = ref(1)
-const pages_number = ref(10)
-
-// 模拟数据数组
-const items = ref([
-  { postId: 1, content: 'Text' },
-  { postId: 2, content: 'Image' },
-]);
-
-const items_file = ref([
-  { fileId: 1, content: 'Text' },
-  { fileId: 2, content: 'Image' },
-]);
-
-// 模拟每次加载的数据数量
-const itemsPerLoad = 2;
-
-// 加载更多数据的方法
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
-    }));
-    items.value = [...items.value, ...newItems];
-  }, 1000);
-};
-
-const tab = ref('option-3');
+const tab = ref('option-1');
 </script>
 
 <template>
@@ -84,6 +53,7 @@ const tab = ref('option-3');
             <v-card flat>
               <v-card-text>
                 // TODO: 个人动态
+                <TestPage></TestPage>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
@@ -103,30 +73,23 @@ const tab = ref('option-3');
             </v-card>
           </v-tabs-window-item>
         </v-tabs-window>
-
       </v-sheet>
-
-<!--      <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-2">-->
-<!--        <v-container v-for="(item_file, index) in items_file" :key="index" :item="item_file">-->
-<!--          <v-row>-->
-<!--            <v-col >-->
-<!--              <v-sheet-->
-<!--                  border="dashed md"-->
-<!--                  color="surface-light"-->
-<!--                  height="auto"-->
-<!--                  rounded="lg"-->
-<!--                  width="auto"-->
-<!--                  class="hover-effect"-->
-<!--                  @click="$router.push('/file-manager/{{item_file.id}}')"-->
-<!--              >-->
-<!--                <FileItem></FileItem>-->
-<!--              </v-sheet>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--        </v-container>-->
-<!--      </v-sheet>-->
     </v-container>
   </div>
+
+  <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light">
+    <v-btn
+        v-for="link in links"
+        :key="link"
+        :text="link"
+        variant="text"
+        rounded
+    ></v-btn>
+
+    <div class="flex-1-0-100 text-center mt-2">
+      {{ new Date().getFullYear() }} — <strong>Vuetify</strong>
+    </div>
+  </v-footer>
 </template>
 
 <style scoped>
