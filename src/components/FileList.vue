@@ -18,6 +18,16 @@ const items = ref([
   { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
 ]);
 
+const fileTypes = [
+  'Text',
+  'Image',
+  'Video',
+  'Audio',
+  'Other'
+];
+const fileBody = ref(null);
+const fileClass=ref('');
+
 // 模拟每次加载的数据数量
 const itemsPerLoad = 3;
 
@@ -34,30 +44,45 @@ const loadMore = () => {
 };
 
 
-const handleClick = (item) => {
-  console.log(item)
-  // 跳转到详情页
-  router.push('/post-detail/' + item.id);
-}
-
-const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
-const breadcrumbs = [
-  {
-    title: 'Dashboard',
-    href: 'breadcrumbs_dashboard'
-  },
-  {
-    title: 'Link 1',
-    href: 'breadcrumbs_link_1'
-  },
-  {
-    title: 'Link 2',
-    href: 'breadcrumbs_link_2',
-    disabled: false
-  }
-]
 const chips = ref(['Default'])
 const dialog = ref(false);
+
+async function downloadFile(userId, postId) {
+  const url = `http://localhost:8080/file/download?userId=${userId}&postId=${postId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET'
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: -3, msg: '服务器内部错误', data: null };
+  }
+}
+
+const uploadFile = async (fileBody, fileClass) =>{
+  const formData = new FormData();
+  formData.append('fileBody', fileBody);
+  formData.append('fileClass', JSON.stringify(fileClass));
+
+  const url = '/upload';
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        // 注意：fetch会自动设置Content-Type为multipart/form-data
+        // 并添加正确的boundary，所以这里不需要手动设置
+      },
+      body: formData
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: 500, message: '服务器内部错误', data: null };
+  }
+}
 
 </script>
 
@@ -68,12 +93,24 @@ const dialog = ref(false);
         <v-file-input
             label="File input"
             multiple
+            v-model="fileBody"
+            @change="uploadFile"
         ></v-file-input>
       </v-col>
       <v-col>
-        <v-btn class="bg-blue hover-effect" @click="dialog = true">
-          <v-icon>mdi-comment-text-outline</v-icon>
-          编辑信息
+<!--        <v-btn class="bg-blue" @click="dialog = true">-->
+<!--          <v-icon>mdi-comment-text-outline</v-icon>-->
+<!--          编辑信息-->
+<!--        </v-btn>-->
+        <v-select
+            :items="fileTypes"
+            :menu-props="{ scrim: true, scrollStrategy: 'close' }"
+            label="Label"
+            v-model="fileClass"
+        ></v-select>
+        <v-btn class="bg-green mx-2" @click="uploadFile(fileBody, fileClass)">
+          <v-icon>mdi-cloud-upload</v-icon>
+          上传文件
         </v-btn>
       </v-col>
     </v-row>
@@ -138,7 +175,7 @@ const dialog = ref(false);
                 rounded="lg"
                 width="100%"
                 class="hover-effect"
-                @click="handleClick(item)"
+                @click="downloadFile(userId, postId)"
             ><FileItem></FileItem></v-sheet>
           </v-container>
         </v-infinite-scroll>

@@ -25,10 +25,12 @@ async function onClick() {
       response = await fetch(`/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
     }
 
-    emit('search-result', response)
+    // emit('search-result', response)
+    defineProps({ searchResult: response })
   } catch (error) {
+
     console.error('搜索出错:', error)
-    emit('search-result', { code: 500, message: '网络错误', data: null })
+    // emit('search-result', { code: 500, message: '网络错误', data: null })
   } finally {
     loading.value = false
     loaded.value = true

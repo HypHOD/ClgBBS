@@ -4,6 +4,8 @@ import PostItem from "./PostItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
+import TestPage from "@/components/TestPage.vue";
+import SearchPart from "@/components/SearchPart.vue";
 
 const router = useRouter();
 const signInStore = useSignInStore();
@@ -61,6 +63,11 @@ const handleClick = (item) => {
 const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
 
 const chips = ref(['Default'])
+
+const GetSearchResponse = (response) => {
+  console.log(response)
+  items.value = response.data.data
+}
 
 </script>
 
@@ -124,6 +131,11 @@ const chips = ref(['Default'])
             </v-input>
           </v-sheet>
         </v-container>
+      </v-row>
+      <v-row justify="end">
+        <v-col>
+          <SearchPart :SendSerachResponse="GetSearchResponse"></SearchPart>
+        </v-col>
       </v-row>
       <v-row>
         <v-container>
