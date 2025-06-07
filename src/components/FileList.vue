@@ -13,6 +13,23 @@ const ins = axios.create({
 const router = useRouter();
 const signInStore = useSignInStore();
 
+const userId = signInStore.userInfo.userId;
+const postId = ref(null);
+const postPrice = 10;
+
+const handleDownload(postId){
+  if(signInStore.userInfo.coins < postPrice){
+        alert('余额不足');
+        return;
+  } else {
+    downloadFile(userId, postId);
+    signInStore.userInfo.coins -= postPrice;
+    // //向服务器请求扣除金币
+    // const url = `http://localhost:8080/user/charge?userId=${userId}&coins=${postPrice}`;
+    // ins.post(url, {})
+  }
+}
+
 async function downloadFile(userId, postId) {
   const url = `http://localhost:8080/file/download?userId=${userId}&postId=${postId}`;
   try {
