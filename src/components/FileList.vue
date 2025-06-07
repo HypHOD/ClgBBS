@@ -6,10 +6,45 @@ import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
 
+const ins = axios.create({
+  baseURL: 'http://localhost:3000',
+  timeout: 1000,
+});
 const router = useRouter();
 const signInStore = useSignInStore();
 
+async function downloadFile(userId, postId) {
+  const url = `http://localhost:8080/file/download?userId=${userId}&postId=${postId}`;
+  try {
+    await const res = await ins.post(url, {})
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([res.data]));
+    a.download = 'download.txt';
+    a.click();
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: -3, msg: '服务器内部错误', data: null };
+  }
+}
 
+const uploadFile = async (fileBody, fileClass) =>{
+  const formData = new FormData();
+  formData.append('fileBody', fileBody);
+  formData.append('fileClass', JSON.stringify(fileClass));
+
+  try {
+    await const res = await ins.post('/upload', formData, {
+      headers: {
+        'Content-Type':'multipart/form-data'
+      }
+    })
+    console.log(res.data);
+    return { code: 200, message: '上传成功', data: null };
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: 500, message: '服务器内部错误', data: null };
+  }
+}
 // 模拟数据数组
 const items = ref([
   { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
@@ -47,42 +82,7 @@ const loadMore = () => {
 const chips = ref(['Default'])
 const dialog = ref(false);
 
-async function downloadFile(userId, postId) {
-  const url = `http://localhost:8080/file/download?userId=${userId}&postId=${postId}`;
-  try {
-    const response = await fetch(url, {
-      method: 'GET'
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('请求出错:', error);
-    return { code: -3, msg: '服务器内部错误', data: null };
-  }
-}
 
-const uploadFile = async (fileBody, fileClass) =>{
-  const formData = new FormData();
-  formData.append('fileBody', fileBody);
-  formData.append('fileClass', JSON.stringify(fileClass));
-
-  const url = '/upload';
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        // 注意：fetch会自动设置Content-Type为multipart/form-data
-        // 并添加正确的boundary，所以这里不需要手动设置
-      },
-      body: formData
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('请求出错:', error);
-    return { code: 500, message: '服务器内部错误', data: null };
-  }
-}
 
 </script>
 
