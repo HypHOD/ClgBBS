@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref onMounted } from 'vue'
 import PostItem from "./PostItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
@@ -7,28 +7,82 @@ import { useSignInStore } from '@/store/SignIn.ts';
 import TestPage from "@/components/TestPage.vue";
 import SearchPart from "@/components/SearchPart.vue";
 
+
+const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
+const chips = ref(['Default'])
+
+type Post = {
+  id: number | null,
+  section: string | null,
+  userId: number | null,
+  createTime: string,
+  updateTime: string,
+  title: string,
+  like_num: number,
+  isDelete: number,
+  content: string,
+}
+const PostList = ref<Post[]>([]);
+
+const ins = axios.create({
+  baseURL: 'http://localhost:3000',
+  timeout: 1000,
+});
 const router = useRouter();
 const signInStore = useSignInStore();
 const newPost= reactive({
+  uid: '',
   postTitle: '',
   postContent: '',
-  uid: '',
   isAnonymous: false
 });
 
-const handleSubmit = () => {
+async function handleSubmit() {
   // 发送请求
-  if (!newPost.isAnonymous){
-    newPost.uid = signInStore.userInfo.uid;
-  }
-  axios.post('/api/post', newPost).then(res => {
-    console.log(res.data);
-    // 刷新页面
-    router.push('/post-list');
-  }).catch(err => {
-    console.log(err);
+
+  const res = await ins.post('/post/create', {
+    userId: signInStore.userInfo.userId,
+    postTitle: newPost.postTitle,
+    postContent: newPost.postContent,
+    isAnonymous: newPost.isAnonymous,
+    tags: chips.value
   });
+  console.log(res.data);
+  // 刷新页面
+  await router.push('/app-layout');
 }
+
+// 接收帖子列表数据
+async function GetPostList() {
+  // 发送请求
+  const res = await ins.get('/section/search',{
+    params:{
+      pageNum: 1,
+      pageSize: 5,
+      name: 'test'
+    }
+  }).then(
+      (response) => {
+        console.log(response.data);
+        return response.data;
+      },
+      (error) => {
+        console.log(error);
+      }
+  ).then((data) => {
+    console.log(data)
+    PostList.value = data.data.list
+  });
+
+}
+
+const loadMoreWithHttp = () => {
+  // 模拟异步加载数据
+  setTimeout(() => {
+    GetPostList();
+  }, 1000);
+};
+
 
 // 模拟数据数组
 const items = ref([
@@ -37,11 +91,7 @@ const items = ref([
   { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
   { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
 ]);
-
-// 模拟每次加载的数据数量
 const itemsPerLoad = 3;
-
-// 加载更多数据的方法
 const loadMore = () => {
   // 模拟异步加载数据
   setTimeout(() => {
@@ -60,14 +110,16 @@ const handleClick = (item) => {
   router.push('/post-detail/' + item.id);
 }
 
-const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
 
-const chips = ref(['Default'])
 
 const GetSearchResponse = (response) => {
   console.log(response)
   items.value = response.data.data
 }
+
+onMounted(() => {
+  GetPostList();
+}, { wait: true });
 
 </script>
 
