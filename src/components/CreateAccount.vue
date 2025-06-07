@@ -8,25 +8,23 @@ const router = useRouter()
 const createAccountStore = useCreateAccountStore()
 
 const form = ref({
-  name: '',
-  email: '',
+  username: '',
   password: '',
-  confirmPassword: '',
-  isConfirmed: false
+  email: '',
+  realNameAuth: false,
+  realName: '',
+  idCard:'',
 })
 
 const handleSubmit = async () => {
   // 这里可以添加表单验证逻辑
   try{
-    if (form.value.password!== form.value.confirmPassword) {
-      alert('两次输入的密码不一致')
-      return
-    }
-
     // 调用 store 中的 createAccount 方法
-    createAccountStore.name = form.value.name
+    createAccountStore.username = form.value.username
     createAccountStore.email = form.value.email
     createAccountStore.password = form.value.password
+    createAccountStore.realName = form.value.realName
+    createAccountStore.idCard = form.value.idCard
     await createAccountStore.createAccount()
 
     // 跳转到登录页面
@@ -45,7 +43,6 @@ const handleSubmit = async () => {
   // router.push('/app-layout') // 假设主页面的路由是 /main-page
 }
 
-const checkbox = ref(false)
 </script>
 
 <template>
@@ -59,15 +56,14 @@ const checkbox = ref(false)
     </div>
     <form @submit.prevent="handleSubmit" class="mx-auto mt-16 max-w-xl sm:mt-20">
       <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-
         <div class="sm:col-span-2">
           <label for="username" class="block text-sm font-semibold text-gray-900">用户名</label>
           <div class="mt-2.5">
-            <input v-model="form.name" type="text" name="username" id="text" autocomplete="username" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.username" type="text" name="username" id="text" autocomplete="username" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
-        <div class="sm:col-span-2">
+        <div class="sm:col-span-2" >
           <label for="email" class="block text-sm font-semibold text-gray-900">邮箱地址</label>
           <div class="mt-2.5">
             <input v-model="form.email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
@@ -80,17 +76,25 @@ const checkbox = ref(false)
             <input v-model="form.password" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
-        <div class="sm:col-span-2">
-          <label for="password" class="block text-sm font-semibold text-gray-900">再次输入密码</label>
+
+        <div class="sm:col-span-2" v-if="form.realNameAuth">
+          <label for="username" class="block text-sm font-semibold text-gray-900">姓名</label>
           <div class="mt-2.5">
-            <input v-model="form.confirmPassword" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.realName" type="text" name="realName" id="text" autocomplete="name" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+          </div>
+        </div>
+
+        <div class="sm:col-span-2" v-if="form.realNameAuth">
+          <label for="username" class="block text-sm font-semibold text-gray-900">身份证号</label>
+          <div class="mt-2.5">
+            <input v-model="form.idCard" type="text" name="IC" id="text" autocomplete="sdcard" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
       </div>
 
       <v-container fluid>
-        <v-checkbox v-model="form.isConfirmed">
+        <v-checkbox v-model="form.realNameAuth">
           <template v-slot:label>
             <div>
               勾选表示同意
@@ -102,13 +106,14 @@ const checkbox = ref(false)
                       v-bind="props"
                       @click.stop
                   >
-                    隐私政策
+                    实名政策
                   </a>
                 </template>
-                骗你的,没有这东西
+                提交实名信息
               </v-tooltip>
             </div>
           </template>
+
         </v-checkbox>
       </v-container>
 
@@ -118,7 +123,7 @@ const checkbox = ref(false)
         <button
             type="submit"
             class="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          登录
+          注册
         </button>
       </div>
 

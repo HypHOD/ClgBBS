@@ -1,9 +1,12 @@
 import {defineStore} from 'pinia'
 export const useCreateAccountStore = defineStore('createAccount', {
   state: () => ({
-    name: '',
+    username: '',
     email: '',
     password: '',
+    realNameAuth: '',
+    realName:'',
+    idCard: '',
     error: '',
     success: false,
     loading: false,
@@ -12,18 +15,20 @@ export const useCreateAccountStore = defineStore('createAccount', {
     async createAccount() {
       this.loading = true
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+        const response = await fetch('/user/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: this.name,
-            email: this.email,
+            username: this.username,
             password: this.password,
+            email: this.email,
+            relNameAuth: this.realNameAuth,
+            realName: this.realName,
+            idCard: this.idCard,
           }),
         })
-        const data = await response.json()
         this.error = ''
         this.success = true
         this.loading = false
@@ -35,9 +40,12 @@ export const useCreateAccountStore = defineStore('createAccount', {
       }
     },
     reset() {
-      this.name = ''
+      this.username = ''
       this.email = ''
       this.password = ''
+      this.realNameAuth = ''
+      this.realName = ''
+      this.idCard = ''
       this.error = ''
       this.success = false
       this.loading = false

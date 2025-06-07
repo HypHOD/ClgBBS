@@ -3,27 +3,33 @@ import {defineStore} from 'pinia'
 export const useSignInStore = defineStore('signIn', {
   state: () => ({
     email: '',
+    username: '',
     password: '',
     error: '',
     loading: false,
     userInfo: {
-      uid: null,
+      token: '',
+      userId: null,
       avatar: '',
-      username: '' // 未设置则为uid
+      transferCode: '',
+      unreadNotifications: 0,
     }
   }),
   actions: {
     async signIn() {
       this.loading = true
       try {
-        const response = await fetch('https://example.com/api/login', {
+        const response = await fetch('/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: this.email,
-            password: this.password,
+            // email: this.email,
+            token: this.token,
+            userId: this.userId,
+            transferCode: this.transferCode,
+            unreadNotifications: this.unreadNotifications,
           }),
         })
         if (!response.ok) {
@@ -40,13 +46,11 @@ export const useSignInStore = defineStore('signIn', {
       }
     },
     async fetchUserInfo() {
-      if (!this.email) {
-        throw new Error('没有提供邮箱地址')
+      if (!this.userInfo.token) {
+        throw new Error('没有用户token')
       }
-
       this.loading = true
       this.error = ''
-
       try {
         const response = await fetch(`https://example.com/api/user?email=${encodeURIComponent(this.email)}`, {
           method: 'GET',
