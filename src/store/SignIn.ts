@@ -19,6 +19,7 @@ export const useSignInStore = defineStore('signIn', {
       // avatar: '',
       transferCode: '',
       unreadNotifications: 0,
+      coins: 0,
     }
   }),
   actions: {
