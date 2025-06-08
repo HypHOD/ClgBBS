@@ -1,56 +1,94 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue';
+import MarkdownIt from 'markdown-it';
+import katex from 'markdown-it-katex';  // 引入 KaTeX 插件
+import DOMPurify from 'dompurify';
+import { debounce } from 'lodash-es';
+import 'highlight.js/styles/github-dark.css';
+import 'katex/dist/katex.min.css';  // 引入 KaTeX 样式
+import hljs from "highlight.js";
 
-const emit = defineEmits(['search-result'])
-const loaded = ref(false)
-const loading = ref(false)
-const search = ref('')
+const input = ref('');
+const output = ref('');
 
-async function onClick() {
-  if (!search.value.trim()) return // 避免空搜索
-
-  loading.value = true
-  loaded.value = false
-
-  try {
-    const prefix = search.value[0] || ''
-    const searchText = search.value.slice(1)
-    let response
-
-    if (prefix === '!') {
-      response = await fetch(`/section/search/${searchText}`).then(res => res.json())
-    } else if (prefix === '@') {
-      response = await fetch(`/user/search/${searchText}`).then(res => res.json())
-    } else {
-      response = await fetch(`/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
+// 配置 MarkdownIt 实例
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, code).value;
+      } catch (__) {}
     }
+    return '';
+  },
+});
 
-    emit('search-result', response)
-  } catch (error) {
-    console.error('搜索出错:', error)
-    emit('search-result', { code: 500, message: '网络错误', data: null })
-  } finally {
-    loading.value = false
-    loaded.value = true
+// 使用 KaTeX 插件解析数学公式
+md.use(katex, {
+  throwOnError: false,  // 错误时不抛出异常
+  errorColor: '#cc0000' // 错误显示颜色
+});
+
+// 配置 DOMPurify 以允许 KaTeX 生成的特殊标签和属性
+DOMPurify.addHook('beforeSanitizeElements', (node, data) => {
+  // 允许 KaTeX 使用的所有标签
+  const allowedTags = [
+    'math', 'maction', 'maligngroup', 'malignmark', 'menclose',
+    'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr',
+    'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom',
+    'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub',
+    'msubsup', 'msup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder',
+    'munderover', 'semantics', 'annotation', 'annotation-xml'
+  ];
+
+  if (allowedTags.includes(node.tagName?.toLowerCase())) {
+    data.allowedTags.push(node.tagName.toLowerCase());
   }
-}
+});
+
+// 扩展允许的属性
+DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
+  if (node.tagName?.toLowerCase().startsWith('m')) {
+    // 允许所有以 m 开头的 MathML 标签的所有属性
+    data.allow = true;
+  }
+});
+
+const update = debounce(() => {
+  // 解析 Markdown 并应用安全过滤
+  output.value = DOMPurify.sanitize(md.render(input.value), {
+    ADD_ATTR: ['class', 'href', 'name', 'src', 'type', 'for', 'property', 'typeof', 'xmlns'],
+  });
+}, 300);
+
+onMounted(() => {
+  update();
+});
+
+watch(input, update);
 </script>
 
 <template>
-  <v-card class="mx-auto" color="surface-light" max-width="400">
-    <v-card-text>
-      <v-text-field
-          v-model="search"
-          :loading="loading"
-          append-inner-icon="mdi-magnify"
-          density="compact"
-          label='<!>分区搜索 <@>uid搜索'
-          variant="solo"
-          hide-details
-          single-line
-          @click:append-inner="onClick"
-          @keyup.enter="onClick"
-      ></v-text-field>
-    </v-card-text>
-  </v-card>
+  <div class="bg-gray-100 p-4">
+    <textarea v-model="input" @input="update" rows="10" class="w-full p-2 border border-gray-300 rounded"></textarea>
+    <div v-html="output" class="mt-4 p-4 bg-white border border-gray-300 rounded"></div>
+  </div>
 </template>
+
+<style scoped>
+/* 添加基本样式 */
+textarea {
+  font-family: monospace;
+}
+
+/* 数学公式样式 */
+.katex {
+  font-size: 1em !important;
+}
+
+.mjx-chtml {
+  outline: none;
+}
+</style>
