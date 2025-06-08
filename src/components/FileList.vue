@@ -31,14 +31,13 @@ async function getFileList() {
 // 模拟数据数组
 const fileList = ref([
   { fileId: 1, fileClass: 'PDF'},
-  { fileId: 2, fileClass: 'zip'},
-  { fileId: 3, fileClass: 'Video'},
+  { fileId: 2, fileClass: 'Video'},
+  { fileId: 3, fileClass: 'ZIP'},
 ]);
 
 const fileTypes = [
-  'Image',
+  'PDF',
   'Video',
-  'Audio',
   'ZIP'
 ];
 const fileBody = ref(null);
@@ -148,6 +147,7 @@ async function downloadFile(userId, postId) {
                 rounded="lg"
                 width="100%"
                 class="hover-effect"
+                v-if="fileTypes.includes(item.fileClass)"
                 @click="downloadFile(userId, postId)"
             ><FileItem></FileItem></v-sheet>
           </v-container>
