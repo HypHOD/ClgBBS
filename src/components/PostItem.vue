@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-const postContent = ref('');
+import MarkdownRender from "@/components/MarkdownRender.vue";
+const postContent = ref('default post content');
 const displayText = ref('');
 
 setTimeout(() => {
-  postContent.value = '服务器帖子内容示例，';
+  postContent.value = '$y=x^2$';
   displayText.value = postContent.value.substring(0, 50) + (postContent.value.length > 50? '...' : '');
 }, 1000);
 
@@ -33,7 +34,7 @@ const groupTag = ref(['群组1', '群组2', '群组3'])
                 width="100%"
                 class="opacity-100"
             >
-              {{displayText}}
+              <MarkdownRender :postContent="postContent"></MarkdownRender>
             </v-sheet>
           </v-row>
           <v-row>
