@@ -8,16 +8,15 @@ const router = useRouter()
 // 模拟数据数组
 // 楼主
 const head = ref([
-  { uid: 1, title: 'Title', content: 'Text', likes: 0, liked: false, creatTime: '2022-01-01 12:00:00' },
+  { uid: 1,postId:'123', title: 'Title', content: 'Text', likes: 0, liked: false, creatTime: '2022-01-01 12:00:00' },
 ]);
 
 // 评论
 const comments = ref([
-  { uid: 2, content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
-  { uid: 3, content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
+  { uid: 2,postId:'123#1', content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
+  { uid: 3,postId:'123#2', content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
 ]);
 const postId = Number(router.currentRoute.value.params.id)
-
 
 
 // 向服务器申请对应内容
@@ -64,11 +63,13 @@ const handleLike = (item: any) => {
   }
 
   // 向服务器发送点赞数量
-  axios.post('API_URL/like', { id: item.id, likes: item.likes })
+  axios.post('/comments/${postId}/like', { id: item.id, likes: item.likes })
       .then(() => {
+        alert('点赞数量刷新成功');
         console.log('点赞数量刷新成功');
       })
       .catch(() => {
+        alert('点赞数量刷新失败');
         console.log('点赞数量刷新失败');
       });
 };
@@ -82,11 +83,13 @@ const handleReport = () => {
     console.log('举报成功');
   }
   // 向服务器发送举报内容
-  axios.post('API_URL/report', { content: report })
+  axios.post('/comments/${postId}/dislike')
       .then(() => {
+        alert('举报成功');
         console.log('举报成功');
       })
       .catch(() => {
+        alert('举报失败');
         console.log('举报失败');
       });
 };
@@ -113,12 +116,14 @@ const submitComment = () => {
     };
 
     // 发送新评论到服务器
-    axios.post('API_URL/comments', newComment)
+    axios.post(`/comments/${postId}`, newComment)
         .then(() => {
+          alert('评论提交成功');
           console.log('评论提交成功');
           comments.value = [...comments.value, newComment]; // 更新本地评论列表
         })
         .catch(() => {
+          alert('评论提交失败');
           console.log('评论提交失败');
         });
 
@@ -269,16 +274,11 @@ const submitComment = () => {
                             label
                         >{{ item_file.likes }}</v-chip>
                       </v-btn>
-
                       <v-btn class="bg-black hover-effect" @click="handleReport">
                         <v-icon>mdi-flag</v-icon>
                         举报
                       </v-btn>
-
                     </v-card-actions>
-
-
-
                   </v-sheet>
                 </v-sheet>
               </v-col>
@@ -306,19 +306,17 @@ const submitComment = () => {
                         color="primary"
                         label
                         class="mt-1 mx-1"
-                    >父评论ID:{{ postId }}</v-chip>
+                    >父评论ID:{{ head[0].postId }}</v-chip>
                     <v-chip
                         color="primary"
                         label
                         class="mt-1 mx-1"
-                    >当前评论楼层:{{ comments[index].commentId }}</v-chip>
+                    >当前楼层:{{ '#' + comments[index].postId.split('#')[1] }}</v-chip>
                     <v-chip
                         color="primary"
                         label
                         class="mt-1 mx-1"
                     >发布时间:{{ comments[index].creatTime }}</v-chip>
-
-
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
@@ -335,7 +333,6 @@ const submitComment = () => {
             </v-row>
           </v-col>
         </v-row>
-
       </v-container>
     </v-sheet>
   </v-infinite-scroll>

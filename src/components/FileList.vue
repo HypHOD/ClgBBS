@@ -7,7 +7,7 @@ import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
 
 const ins = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'API_URL',
   timeout: 1000,
 });
 const router = useRouter();
@@ -17,65 +17,29 @@ const userId = signInStore.userInfo.userId;
 const postId = ref(null);
 const postPrice = 10;
 
-const handleDownload(postId){
-  if(signInStore.userInfo.coins < postPrice){
-        alert('余额不足');
-        return;
-  } else {
-    downloadFile(userId, postId);
-    signInStore.userInfo.coins -= postPrice;
-    // //向服务器请求扣除金币
-    // const url = `http://localhost:8080/user/charge?userId=${userId}&coins=${postPrice}`;
-    // ins.post(url, {})
-  }
-}
-
-async function downloadFile(userId, postId) {
-  const url = `http://localhost:8080/file/download?userId=${userId}&postId=${postId}`;
+async function getFileList() {
   try {
-    await const res = await ins.post(url, {})
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([res.data]));
-    a.download = 'download.txt';
-    a.click();
-  } catch (error) {
-    console.error('请求出错:', error);
-    return { code: -3, msg: '服务器内部错误', data: null };
-  }
-}
-
-const uploadFile = async (fileBody, fileClass) =>{
-  const formData = new FormData();
-  formData.append('fileBody', fileBody);
-  formData.append('fileClass', JSON.stringify(fileClass));
-
-  try {
-    await const res = await ins.post('/upload', formData, {
-      headers: {
-        'Content-Type':'multipart/form-data'
-      }
-    })
+    const res = await ins.get('/file/list?userId=' + userId);
     console.log(res.data);
-    return { code: 200, message: '上传成功', data: null };
-  } catch (error) {
-    console.error('请求出错:', error);
+    return { code: 200, message: '获取成功', data: res.data };
+  }catch(err) {
+    console.error(err);
     return { code: 500, message: '服务器内部错误', data: null };
   }
 }
+
 // 模拟数据数组
-const items = ref([
-  { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
-  { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
-  { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
+const fileList = ref([
+  { fileId: 1, fileClass: 'PDF'},
+  { fileId: 2, fileClass: 'zip'},
+  { fileId: 3, fileClass: 'Video'},
 ]);
 
 const fileTypes = [
-  'Text',
   'Image',
   'Video',
   'Audio',
-  'Other'
+  'ZIP'
 ];
 const fileBody = ref(null);
 const fileClass=ref('');
@@ -88,19 +52,48 @@ const loadMore = () => {
   // 模拟异步加载数据
   setTimeout(() => {
     const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
+      id: fileList.value.length + i + 1,
+      content: `Item ${fileList.value.length + i + 1}`,
     }));
-    items.value = [...items.value, ...newItems];
+    fileList.value = [...fileList.value, ...newItems];
   }, 1000);
 };
 
 
 const chips = ref(['Default'])
-const dialog = ref(false);
+// const dialog = ref(false);
 
+async function uploadFile(fileBody, fileClass) {
+  const formData = new FormData();
+  formData.append('fileBody', fileBody);
+  formData.append('fileClass', JSON.stringify(fileClass));
 
+  try {
+    const res = await ins.post('/upload', formData, {
+      headers: {
+        'Content-Type':'multipart/form-data'
+      }
+    })
+    console.log(res.data);
+    return { code: 200, message: '上传成功', data: null };
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: 500, message: '服务器内部错误', data: null };
+  }
+}
 
+async function downloadFile(userId, postId) {
+  try {
+    const res = await ins.get(`/file/download?userId=${userId}&postId=${postId}`);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([res.data]));
+    a.download = 'download.txt';
+    a.click();
+  } catch (error) {
+    console.error('请求出错:', error);
+    return { code: -3, msg: '服务器内部错误', data: null };
+  }
+}
 </script>
 
 <template>
@@ -111,18 +104,13 @@ const dialog = ref(false);
             label="File input"
             multiple
             v-model="fileBody"
-            @change="uploadFile"
         ></v-file-input>
       </v-col>
       <v-col>
-<!--        <v-btn class="bg-blue" @click="dialog = true">-->
-<!--          <v-icon>mdi-comment-text-outline</v-icon>-->
-<!--          编辑信息-->
-<!--        </v-btn>-->
         <v-select
             :items="fileTypes"
             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-            label="Label"
+            label="选择上传的文件类型"
             v-model="fileClass"
         ></v-select>
         <v-btn class="bg-green mx-2" @click="uploadFile(fileBody, fileClass)">
@@ -131,43 +119,11 @@ const dialog = ref(false);
         </v-btn>
       </v-col>
     </v-row>
-<!--    编辑信息弹窗-->
-    <v-dialog v-model="dialog" max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">编辑信息</span>
-        </v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-col>
-              <v-text-field label="标题" v-model="title"></v-text-field>
-            </v-col>
-            <v-col>
-              <v-text-field label="描述" v-model="description"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field label="标签" v-model="tags"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field label="分类" v-model="classify"></v-text-field>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="dialog = false">取消</v-btn>
-          <v-btn text @click="dialog = false">确定</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <v-row>
       <v-container class="bg-gray-100">
         <v-combobox
             v-model="chips"
-            :items="tips"
+            :items="fileTypes"
             label="条件筛选"
             variant="solo"
             chips
@@ -183,8 +139,8 @@ const dialog = ref(false);
           </template>
         </v-combobox>
         <hr>
-        <v-infinite-scroll  @load="loadMore" :items="items" >
-          <v-container v-for="(item, index) in items" :key="index" :item="item">
+        <v-infinite-scroll  @load="loadMore" :items="fileList" >
+          <v-container v-for="(item, index) in fileList" :key="index" :item="item">
             <v-sheet
                 border="dashed md"
                 color="surface-light"

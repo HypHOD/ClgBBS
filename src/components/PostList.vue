@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { reactive, ref onMounted } from 'vue'
+import { reactive, ref , onMounted } from 'vue'
 import PostItem from "./PostItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
-import TestPage from "@/components/TestPage.vue";
 import SearchPart from "@/components/SearchPart.vue";
 
 
@@ -37,7 +36,7 @@ const newPost= reactive({
   isAnonymous: false
 });
 
-async function handleSubmit() {
+async function uploadPost() {
   // 发送请求
 
   const res = await ins.post('/post/create', {
@@ -177,7 +176,7 @@ onMounted(() => {
                   </v-combobox>
                 </v-row>
                 <v-row class="flex-column">
-                  <v-btn color="primary" @click="handleSubmit">发布</v-btn>
+                  <v-btn color="primary" @click="uploadPost">发布</v-btn>
                 </v-row>
               </v-container>
             </v-input>

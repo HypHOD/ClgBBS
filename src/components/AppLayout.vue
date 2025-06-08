@@ -20,57 +20,11 @@ const groups = ref([
   { name: '群组 2' },
   { name: '群组 3' },
 ]);
-//   const fetchPosts = async () => {
-//   try {
-//     const response = await axios.get('API_URL');
-//     const data = response.data;
-//
-//     // 使用 reactive 来管理帖子数据
-//     return reactive(data);
-//   } catch (error) {
-//     console.error('Error fetching posts:', error);
-//     return [];
-//   }
-// };
-//
-// // 调用函数获取帖子数据
-// const posts = await fetchPosts();
 
 const order = shallowRef(0)
 
-// 模拟数据数组
-const items = ref([
-  { id: 1, content: 'Text', isBlurred: false },
-  { id: 2, content: 'Image', isBlurred: false},
-  { id: 3, content: 'Video', isBlurred: false },
-  { id: 4, content: 'https://testURL.com', isBlurred: true },
-]);
-
-// 模拟每次加载的数据数量
-const itemsPerLoad = 3;
-
-// 加载更多数据的方法
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
-    }));
-    items.value = [...items.value, ...newItems];
-  }, 1000);
-};
-
-
-const handleClick = (item) => {
-  console.log(item)
-  // 跳转到详情页
-  router.push('/post-detail/' + item.id);
-}
 
 const tab = ref('Post')
-
-
 </script>
 
 <template>
