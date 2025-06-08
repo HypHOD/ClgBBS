@@ -1,15 +1,3 @@
-<template>
-  <div>
-    <!-- 输入框，用于实时更新Markdown文本 -->
-    <textarea v-model="text" rows="10" cols="50" placeholder="输入Markdown内容"></textarea>
-
-    <!-- 显示渲染的Markdown内容 -->
-    <div style="width: 500px; overflow: auto; margin-top: 20px;">
-      <div v-html="renderedMarkdown"></div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed } from "vue";
 import MarkdownIt from 'markdown-it';
@@ -29,6 +17,18 @@ const renderedMarkdown = computed(() => {
 
 });
 </script>
+
+<template>
+  <div>
+    <!-- 输入框，用于实时更新Markdown文本 -->
+    <textarea v-model="text" rows="10" cols="50" placeholder="输入Markdown内容"></textarea>
+
+    <!-- 显示渲染的Markdown内容 -->
+    <div style="width: 500px; overflow: auto; margin-top: 20px;">
+      <div v-html="renderedMarkdown"></div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 textarea {
