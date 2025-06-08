@@ -20,6 +20,9 @@ import { createPinia } from 'pinia'
 // import marked from 'marked'
 // import DOMPurify from 'dompurify'
 
+//导入 MathJax
+import "@/utils/mathjax";
+import "mathjax/es5/tex-svg";
 
 // 配置 NProgress（可选）
 NProgress.configure({
