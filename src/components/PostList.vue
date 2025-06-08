@@ -120,6 +120,12 @@ onMounted(() => {
   GetPostList();
 }, { wait: true });
 
+const postTypes = [
+  '闲聊',
+  '吐槽',
+  '问答',
+];
+
 </script>
 
 <template>

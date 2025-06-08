@@ -15,10 +15,10 @@ const router = useRouter();
 
 
 // 模拟群组数据
-const groups = ref([
-  { name: '群组 1' },
-  { name: '群组 2' },
-  { name: '群组 3' },
+const messageList = ref([
+  { fromUser: 'user1', content: 'user1' },
+  { fromUser: 'user1', content: 'user1' },
+  { fromUser: 'user1', content: 'user1' },
 ]);
 
 const order = shallowRef(0)
@@ -41,15 +41,16 @@ const tab = ref('Post')
         <v-row>
           <v-card class="mt-1">
             <v-card-title>
-              <h2>Group List</h2>
+              <h2>消息通知</h2>
             </v-card-title>
             <v-card-text>
               <v-layout>
                 <v-container class="">
                   <v-row>
-                    <v-col v-for="(group, index) in groups" :key="index" cols="12" xs="12">
+                    <v-col v-for="(message, index) in messageList" :key="index" cols="12" xs="12">
                       <v-card class="elevation-2">
-                        <v-card-title>{{ group.name }}</v-card-title>
+                        <v-card-title>{{ message.fromUser }}</v-card-title>
+                        <v-card-text>{{ message.content }}</v-card-text>
                         <v-card-actions justify="end">
                           <v-btn icon color="primary">
                             <v-icon>mdi-pencil</v-icon>
