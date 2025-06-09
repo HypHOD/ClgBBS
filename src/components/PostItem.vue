@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import MarkdownRender from "@/components/MarkdownRender.vue";
-const postContent = ref('default post content');
 const displayText = ref('');
 
-setTimeout(() => {
-  postContent.value = '$y=x^2$';
-  displayText.value = postContent.value.substring(0, 50) + (postContent.value.length > 50? '...' : '');
-}, 1000);
 
-defineProps(['where'])
+
+defineProps(['where','postContent'])
 
 const groupTag = ref(['群组1', '群组2', '群组3'])
 </script>

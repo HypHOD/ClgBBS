@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { computed, watch, onMounted } from "vue";
 import MarkdownIt from 'markdown-it';
 
 // 定义 props 并指定类型
@@ -7,30 +7,25 @@ const props = defineProps<{
   postContent: string
 }>();
 
-// 使用 ref 存储处理后的 Markdown 内容
-const processedContent = ref('');
-
 // 初始化 MarkdownIt 实例
 const mdi = new MarkdownIt({
   html: false,  // 不解析 HTML 标签（安全考虑）
   linkify: true, // 自动识别链接
 });
 
-// 处理并渲染 Markdown 内容
+// 直接渲染 prop 传来的 postContent
 const renderedMarkdown = computed(() => {
-  return mdi.render(processedContent.value);
+  return mdi.render(props.postContent);
 });
 
-// 监听 postContent 变化，更新处理后的内容
-watch(() => props.postContent, (newContent) => {
-  processedContent.value = newContent;
-  renderMath(); // 内容更新时重新渲染数学公式
+// 监听 postContent 变化，重新渲染数学公式
+watch(() => props.postContent, () => {
+  renderMath();
 });
 
-// 初始渲染
+// 首次加载时渲染数学公式
 onMounted(() => {
-  processedContent.value = props.postContent;
-  renderMath(); // 首次加载时渲染数学公式
+  renderMath();
 });
 
 // 渲染数学公式的辅助函数

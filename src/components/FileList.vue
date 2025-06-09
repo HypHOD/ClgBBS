@@ -43,21 +43,58 @@ const fileTypes = [
 const fileBody = ref(null);
 const fileClass=ref('');
 
+// 搜索参数
+const searchParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  comment: '',
+  sectionId: null,
+  begin: '',
+  end: ''
+});
 // 模拟每次加载的数据数量
 const itemsPerLoad = 3;
 
+const isLoading = ref(false);
+const hasMore = ref(true);
+const errorMessage = ref('');
 // 加载更多数据的方法
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: fileList.value.length + i + 1,
-      content: `Item ${fileList.value.length + i + 1}`,
-    }));
-    fileList.value = [...fileList.value, ...newItems];
-  }, 1000);
-};
+// 加载更多数据的方法
+const loadMore = async () => {
+  try {
+    // 如果正在加载或没有更多数据，直接返回
+    if (isLoading.value || !hasMore.value) return;
 
+    isLoading.value = true;
+
+    // 构建查询参数
+    const params = {
+      ...searchParams,
+      pageNum: searchParams.pageNum + 1 // 请求下一页
+    };
+
+    // 使用 axios 发送请求
+    const response = await axios.get('/post/search', { params });
+
+    // 假设返回格式为 { items: [...], total: 100 }
+    const newItems = response.data.items || [];
+
+    // 更新文件列表
+    fileList.value = [...fileList.value, ...newItems];
+
+    // 更新分页信息
+    searchParams.pageNum += 1;
+
+    // 判断是否还有更多数据
+    hasMore.value = newItems.length > 0 && fileList.value.length < (response.data.total || Infinity);
+
+  } catch (error) {
+    console.error('加载更多数据失败:', error);
+    errorMessage.value = '加载更多数据失败，请重试';
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const chips = ref(['Default'])
 // const dialog = ref(false);

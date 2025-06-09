@@ -7,12 +7,12 @@ import { useSignInStore } from '@/store/SignIn.ts';
 import SearchPart from "@/components/SearchPart.vue";
 
 
-const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
+const tips = ['分区1', '分区2', '分区3']
 const chips = ref(['Default'])
 
 type Post = {
   id: number | null,
-  section: string | null,
+  sectionId: number | null,
   userId: number | null,
   createTime: string,
   updateTime: string,
@@ -82,24 +82,75 @@ const loadMoreWithHttp = () => {
   }, 1000);
 };
 
+// 搜索参数
+const searchParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  keyword: '',    // 搜索关键词
+  sectionId: '',  // 版块ID
+  startTime: '',  // 开始时间
+  endTime: ''     // 结束时间
+});
+
+// 加载状态
+const isLoading = ref(false);
+const hasMore = ref(true);
+const errorMessage = ref('');
 
 // 模拟数据数组
 const items = ref([
-  { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
+  { id: 1, content: '$y=x^2$', isBlurred: false , postClassify: '1' },
   { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
   { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
+  { id: 4, content: '#123', isBlurred: true , postClassify: '4' },
 ]);
 const itemsPerLoad = 3;
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
-    }));
-    items.value = [...items.value, ...newItems];
-  }, 1000);
+const loadMore = async () => {
+  // 如果正在加载或没有更多数据，直接返回
+  if (isLoading.value || !hasMore.value) return;
+
+  try {
+    isLoading.value = true;
+
+    // 构建查询参数
+    const params = {
+      ...searchParams,
+      pageNum: searchParams.pageNum + 1 // 请求下一页
+    };
+
+    // 发送请求
+    const response = await ins.get('/post/search', { params });
+
+    // 处理响应数据
+    const { items, total } = response.data;
+
+    // 更新数据列表
+    items.value = [...items.value, ...items];
+
+    // 更新分页信息
+    searchParams.pageNum += 1;
+
+    // 判断是否还有更多数据
+    hasMore.value = items.length > 0 && items.value.length < total;
+
+  } catch (error) {
+    console.error('加载更多数据失败:', error);
+
+    // 错误处理
+    if (error.response) {
+      // 服务器返回错误状态码
+      errorMessage.value = `请求失败 (${error.response.status})`;
+    } else if (error.request) {
+      // 请求已发送但没有响应
+      errorMessage.value = '服务器无响应';
+    } else {
+      // 请求设置时出错
+      errorMessage.value = '请求配置错误';
+    }
+
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 
@@ -207,7 +258,7 @@ const postTypes = [
                     width="750"
                     class="hover-effect mx-0"
                     @click="handleClick(item)"
-                ><PostItem :where="'post-list'"/></v-sheet>
+                ><PostItem :where="'post-list'" :postContent="item.content"/></v-sheet>
               </v-container>
             </v-infinite-scroll>
           </v-row>
