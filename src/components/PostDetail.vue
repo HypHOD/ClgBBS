@@ -3,8 +3,26 @@ import { ref , onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 // import {fetchPostDetailById} from '@/api/post'
+import {useSignInStore} from '@/store/signIn'
+
+const signInStore = useSignInStore()
 
 const router = useRouter()
+const ins = axios.create({
+  baseURL: 'API_URL',
+  timeout: 1000,
+});
+// 打赏
+const donateDialog = ref(false)
+const donateAmount = ref(0)
+async function sendTips(userId: number, toUserId: number, amount: number){
+  try{
+    const res = await ins.post('/balance/tip', { tipUserId: userId,postId: toUserId, amount: amount })
+  }catch(err){
+    console.log(err)
+  }
+}
+
 // 模拟数据数组
 // 楼主
 const head = ref([
@@ -183,6 +201,10 @@ const submitComment = () => {
                     label
                 >{{ head[0].likes }}</v-chip>
               </v-btn>
+              <v-btn class="bg-green hover-effect" @click="donateDialog = true">
+                <v-icon>mdi-currency-usd</v-icon>
+                打赏
+              </v-btn>
 
               <v-btn class="bg-black hover-effect" @click="handleReport">
                 <v-icon>mdi-flag</v-icon>
@@ -274,6 +296,10 @@ const submitComment = () => {
                             label
                         >{{ item_file.likes }}</v-chip>
                       </v-btn>
+                      <v-btn class="bg-green hover-effect" @click="">
+                        <v-icon>mdi-currency-usd</v-icon>
+                        打赏
+                      </v-btn>
                       <v-btn class="bg-black hover-effect" @click="handleReport">
                         <v-icon>mdi-flag</v-icon>
                         举报
@@ -348,6 +374,26 @@ const submitComment = () => {
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="submitComment">提交</v-btn>
         <v-btn color="grey darken-1" text @click="replyDialog = false">取消</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+<!--打赏对话框-->
+  <v-dialog v-model="donateDialog" max-width="500px">
+    <v-card>
+      <v-card-title>打赏</v-card-title>
+      <v-card-text>
+        <v-number-input
+            :max="5"
+            :min="1"
+            :model-value="donateAmount"
+            label="请输入打赏金额"
+        ></v-number-input>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="sendTips(signInStore.userInfo.userId, postId, donateAmount)">提交</v-btn>
+        <v-btn color="grey darken-1" text @click="donateDialog = false">取消</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
