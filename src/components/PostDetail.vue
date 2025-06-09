@@ -18,8 +18,14 @@ const donateAmount = ref(0)
 async function sendTips(userId: number, toUserId: number, amount: number){
   try{
     const res = await ins.post('/balance/tip', { tipUserId: userId,postId: toUserId, amount: amount })
+    if(res.data.code === 1){
+      alert('打赏成功')
+    }
+    donateDialog.value = false
   }catch(err){
     console.log(err)
+    alert(err.message)
+    donateDialog.value = false
   }
 }
 
