@@ -26,19 +26,36 @@ const order = shallowRef(0)
 const tab = ref('Post')
 const drawer = ref(true)
 const rail = ref(true)
-
-// 登出
-const logout = () => {
-  localStorage.removeItem('token')
-  router.push('/sign-in')
-}
+const rail1 = ref(false)
 </script>
 
 <template>
   <v-layout class="rounded rounded-md border">
+    <!--    <v-app-bar app>-->
+    <!--      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
+    <!--      <v-toolbar-title>-->
+    <!--        <router-link to="/">-->
+    <!--          <img src="https://cdn.vuetifyjs.com/images/logos/logo.svg" alt="Vuetify Logo" class="mr-2">-->
+    <!--          Vuetify-->
+    <!--        </router-link>-->
+    <!--      </v-toolbar-title>-->
+    <!--      <v-spacer></v-spacer>-->
+    <!--      <v-btn icon>-->
+    <!--        <v-icon>mdi-magnify</v-icon>-->
+    <!--      </v-btn>-->
+    <!--      <v-btn icon>-->
+    <!--        <v-icon>mdi-dots-vertical</v-icon>-->
+    <!--      </v-btn>-->
+    <!--      <v-btn icon>-->
+    <!--        <v-icon>mdi-bell</v-icon>-->
+    <!--      </v-btn>-->
+    <!--      <v-btn icon>-->
+    <!--        <v-icon>mdi-account</v-icon>-->
+    <!--      </v-btn>-->
+    <!--    </v-app-bar>-->
     <v-card>
       <v-layout>
-        <v-spacer></v-spacer>
+
         <v-navigation-drawer
             v-model="drawer"
             :rail="rail"
@@ -47,7 +64,7 @@ const logout = () => {
         >
           <v-list>
             <v-list-item
-                prepend-avatar="https://randomuser.me/api/portraits/men/1.jpg"
+                prepend-avatar="https://randomuser.me/api/portraits/men/2.jpg"
                 title="{{ user.name }}"
             >
               <template v-slot:append>
@@ -59,10 +76,10 @@ const logout = () => {
               </template>
             </v-list-item>
           </v-list>
+
           <v-divider></v-divider>
 
-          <v-list density="compact" nav height="fit-content">
-
+          <v-list density="compact" nav>
             <v-list-item
                 prepend-icon="mdi-home-city"
                 title="Home"
@@ -78,9 +95,16 @@ const logout = () => {
                 prepend-icon="mdi-message"
                 title="Message"
                 value="message"
+                @click="rail1 = !rail1"
             ></v-list-item>
-          </v-list>
+            <v-list v-if="rail1">
+              <v-list-item title="Message List" value="home"></v-list-item>
+              <v-infinite-scroll v-model="order" :items="messageList" :item-size="50" class="rounded-lg">
+                <!--                消息条插槽-->
 
+              </v-infinite-scroll>
+            </v-list>
+          </v-list>
           <template v-slot:append>
             <div class="pa-2" >
               <v-btn block color="primary" @click="logout()" v-if="!rail">
@@ -89,9 +113,13 @@ const logout = () => {
             </div>
           </template>
         </v-navigation-drawer>
+
         <v-main style="height: 700px"></v-main>
       </v-layout>
     </v-card>
+
+    <!--    上侧导航-->
+
 
     <!--    主界面-->
     <v-main height="auto">
@@ -119,6 +147,7 @@ const logout = () => {
       </v-container>
     </v-main>
   </v-layout>
+
 </template>
 
 <style scoped>

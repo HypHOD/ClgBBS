@@ -26,6 +26,7 @@ const order = shallowRef(0)
 const tab = ref('Post')
 const drawer = ref(true)
 const rail = ref(true)
+const rail1 = ref(false)
 </script>
 
 <template>
@@ -94,10 +95,26 @@ const rail = ref(true)
                 prepend-icon="mdi-message"
                 title="Message"
                 value="message"
+                @click="rail1 = !rail1"
             ></v-list-item>
+            <v-list v-if="rail1">
+              <v-list-item title="Message List" value="home"></v-list-item>
+              <v-infinite-scroll v-model="order" :items="messageList" :item-size="50" class="rounded-lg">
+<!--                消息条插槽-->
+
+              </v-infinite-scroll>
+            </v-list>
           </v-list>
+          <template v-slot:append>
+            <div class="pa-2" >
+              <v-btn block color="primary" @click="logout()" v-if="!rail">
+                Logout
+              </v-btn>
+            </div>
+          </template>
         </v-navigation-drawer>
-        <v-main style="height: 250px"></v-main>
+
+        <v-main style="height: 700px"></v-main>
       </v-layout>
     </v-card>
 
