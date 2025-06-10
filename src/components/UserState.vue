@@ -68,7 +68,7 @@ const saveChanges = async () => {
         <div class="box">
           <span></span>
           <div class="content">
-            <h2>惊为天人</h2>
+            <h2>活跃度</h2>
             <p>历史发帖: {{UserState.usercoin}}.</p>
             <p>历史回复: {{UserState.usercoin}}.</p>
             <p>收到点赞: {{UserState.usercoin}}.</p>
@@ -79,9 +79,10 @@ const saveChanges = async () => {
         <div class="box">
           <span></span>
           <div class="content">
-            <h2>伸手党</h2>
+            <h2>上传下载</h2>
             <p>历史上传:</p>
             <p>历史下载:</p>
+            <p>累计收益:</p>
           </div>
         </div>
       </v-col>
@@ -118,9 +119,6 @@ const saveChanges = async () => {
       </v-card-actions>
     </v-card>
   </v-dialog>
-
-
-<!--  <div class="container"></div>-->
 </template>
 
 <style scoped>

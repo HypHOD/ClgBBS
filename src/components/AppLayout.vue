@@ -23,73 +23,75 @@ const messageList = ref([
 
 const order = shallowRef(0)
 
-
 const tab = ref('Post')
+const drawer = ref(true)
+const rail = ref(true)
+
+// 登出
+const logout = () => {
+  localStorage.removeItem('token')
+  router.push('/sign-in')
+}
 </script>
 
 <template>
   <v-layout class="rounded rounded-md border">
-    <v-navigation-drawer color="grey-lighten-1" permanent class="z-10 rounded rounded-md relative">
-      <v-container>
-        <v-row>
-          <UserInfo />
-        </v-row>
-        <v-row>
-          <v-card class="mx-auto bg-gray-100 rounded-lg h-auto mt-1 w-full">
-          </v-card>
-        </v-row>
-        <v-row>
-          <v-card class="mt-1">
-            <v-card-title>
-              <h2>消息通知</h2>
-            </v-card-title>
-            <v-card-text>
-              <v-layout>
-                <v-container class="">
-                  <v-row>
-                    <v-col v-for="(message, index) in messageList" :key="index" cols="12" xs="12">
-                      <v-card class="elevation-2">
-                        <v-card-title>{{ message.fromUser }}</v-card-title>
-                        <v-card-text>{{ message.content }}</v-card-text>
-                        <v-card-actions justify="end">
-                          <v-btn icon color="primary">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-layout>
-            </v-card-text>
-          </v-card>
-        </v-row>
-      </v-container>
-    </v-navigation-drawer>
+    <v-card>
+      <v-layout>
+        <v-spacer></v-spacer>
+        <v-navigation-drawer
+            v-model="drawer"
+            :rail="rail"
+            permanent
+            @click="rail = false"
+        >
+          <v-list>
+            <v-list-item
+                prepend-avatar="https://randomuser.me/api/portraits/men/1.jpg"
+                title="{{ user.name }}"
+            >
+              <template v-slot:append>
+                <v-btn
+                    icon="mdi-chevron-left"
+                    variant="text"
+                    @click.stop="rail = !rail"
+                ></v-btn>
+              </template>
+            </v-list-item>
+          </v-list>
+          <v-divider></v-divider>
 
-    <!--    上侧导航-->
-    <v-app-bar :order="order" color="grey-lighten-2" title="BBSTest" flat class="flex position-fixed top-0 right-0 z-20">
-      <template v-slot:append>
-        <v-btn value="recent">
-          <v-icon>mdi-history</v-icon>
-        </v-btn>
-        <v-btn value="favorites">
-          <v-icon class="">mdi-heart</v-icon>
-        </v-btn>
-        <v-btn value="nearby">
-          <v-badge
-              :content="UserInfo.unread"
-              :absolute="true"
-              :right="0"
-              :top="0"
-              color="red"
-              rounded
-          >
-            <v-icon class="h-6 w-6 text-gray-600">mdi-bell-outline</v-icon>
-          </v-badge>
-        </v-btn>
-      </template>
-    </v-app-bar>
+          <v-list density="compact" nav height="fit-content">
+
+            <v-list-item
+                prepend-icon="mdi-home-city"
+                title="Home"
+                value="home"
+            ></v-list-item>
+            <v-list-item
+                prepend-icon="mdi-account"
+                title="My Account"
+                value="account"
+                to="/personal-homepage"
+            ></v-list-item>
+            <v-list-item
+                prepend-icon="mdi-message"
+                title="Message"
+                value="message"
+            ></v-list-item>
+          </v-list>
+
+          <template v-slot:append>
+            <div class="pa-2" >
+              <v-btn block color="primary" @click="logout()" v-if="!rail">
+                Logout
+              </v-btn>
+            </div>
+          </template>
+        </v-navigation-drawer>
+        <v-main style="height: 700px"></v-main>
+      </v-layout>
+    </v-card>
 
     <!--    主界面-->
     <v-main height="auto">
@@ -117,7 +119,6 @@ const tab = ref('Post')
       </v-container>
     </v-main>
   </v-layout>
-
 </template>
 
 <style scoped>

@@ -1,220 +1,136 @@
 <script setup lang="ts">
-import { reactive, ref , onMounted } from 'vue'
-import PostItem from "./PostItem.vue";
+import {reactive, ref, shallowRef} from 'vue'
+import TextTest from "./PostItem.vue";
+import UserInfo from "./UserInfo.vue";
+import PostList from "./PostList.vue";
+import PostDetail from "./PostDetail.vue";
+import SignIn from "./SignIn.vue";
+import OperationBar from "./OperationBar.vue";
 import axios from 'axios';
-import { useRouter  } from 'vue-router';
-import { useSignInStore } from '@/store/SignIn.ts';
-import SearchPart from "@/components/SearchPart.vue";
+import { useRouter , RouterView , RouterLink } from 'vue-router';
+import FileList from "@/components/FileList.vue";
+import GroupList from "@/components/GroupList.vue";
 
-
-const tips = ['问题求解', '资料分享', '水贴吃瓜', '闲聊']
-const chips = ref(['Default'])
-
-type Post = {
-  id: number | null,
-  section: string | null,
-  userId: number | null,
-  createTime: string,
-  updateTime: string,
-  title: string,
-  like_num: number,
-  isDelete: number,
-  content: string,
-}
-const PostList = ref<Post[]>([]);
-
-const ins = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-});
 const router = useRouter();
-const signInStore = useSignInStore();
-const newPost= reactive({
-  uid: '',
-  postTitle: '',
-  postContent: '',
-  isAnonymous: false
-});
-
-async function uploadPost() {
-  // 发送请求
-
-  const res = await ins.post('/post/create', {
-    userId: signInStore.userInfo.userId,
-    postTitle: newPost.postTitle,
-    postContent: newPost.postContent,
-    isAnonymous: newPost.isAnonymous,
-    tags: chips.value
-  });
-  console.log(res.data);
-  // 刷新页面
-  await router.push('/app-layout');
-}
-
-// 接收帖子列表数据
-async function GetPostList() {
-  // 发送请求
-  const res = await ins.get('/section/search',{
-    params:{
-      pageNum: 1,
-      pageSize: 5,
-      name: 'test'
-    }
-  }).then(
-      (response) => {
-        console.log(response.data);
-        return response.data;
-      },
-      (error) => {
-        console.log(error);
-      }
-  ).then((data) => {
-    console.log(data)
-    PostList.value = data.data.list
-  });
-
-}
-
-const loadMoreWithHttp = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    GetPostList();
-  }, 1000);
-};
 
 
-// 模拟数据数组
-const items = ref([
-  { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
-  { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
-  { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
+// 模拟群组数据
+const messageList = ref([
+  { fromUser: 'user1', content: 'user1' },
+  { fromUser: 'user1', content: 'user1' },
+  { fromUser: 'user1', content: 'user1' },
 ]);
-const itemsPerLoad = 3;
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
-    }));
-    items.value = [...items.value, ...newItems];
-  }, 1000);
-};
 
+const order = shallowRef(0)
 
-const handleClick = (item) => {
-  console.log(item)
-  // 跳转到详情页
-  router.push('/post-detail/' + item.id);
-}
-
-
-
-const GetSearchResponse = (response) => {
-  console.log(response)
-  items.value = response.data.data
-}
-
-onMounted(() => {
-  GetPostList();
-}, { wait: true });
-
-const postTypes = [
-  '闲聊',
-  '吐槽',
-  '问答',
-];
-
+const tab = ref('Post')
+const drawer = ref(true)
+const rail = ref(true)
 </script>
 
 <template>
+  <v-layout class="rounded rounded-md border">
+<!--    <v-app-bar app>-->
+<!--      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
+<!--      <v-toolbar-title>-->
+<!--        <router-link to="/">-->
+<!--          <img src="https://cdn.vuetifyjs.com/images/logos/logo.svg" alt="Vuetify Logo" class="mr-2">-->
+<!--          Vuetify-->
+<!--        </router-link>-->
+<!--      </v-toolbar-title>-->
+<!--      <v-spacer></v-spacer>-->
+<!--      <v-btn icon>-->
+<!--        <v-icon>mdi-magnify</v-icon>-->
+<!--      </v-btn>-->
+<!--      <v-btn icon>-->
+<!--        <v-icon>mdi-dots-vertical</v-icon>-->
+<!--      </v-btn>-->
+<!--      <v-btn icon>-->
+<!--        <v-icon>mdi-bell</v-icon>-->
+<!--      </v-btn>-->
+<!--      <v-btn icon>-->
+<!--        <v-icon>mdi-account</v-icon>-->
+<!--      </v-btn>-->
+<!--    </v-app-bar>-->
+    <v-card>
+      <v-layout>
 
-  <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
-    <v-container>
-      <v-row>
-        <v-container>
-          <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 my-1">
-            <v-input>
-              <v-container class="h-auto">
-                <v-row>
-                  <v-text-field
-                      v-model="newPost.postTitle"
-                      label="输入标题"
-                      outlined
-                      dense
-                      clearable
-                      class="mx-1 mt-1 h-100"
-                      variant="outlined"
-                      bg-color="white"
-                  ></v-text-field>
+        <v-navigation-drawer
+            v-model="drawer"
+            :rail="rail"
+            permanent
+            @click="rail = false"
+        >
+          <v-list>
+            <v-list-item
+                prepend-avatar="https://randomuser.me/api/portraits/men/2.jpg"
+                title="{{ user.name }}"
+            >
+              <template v-slot:append>
+                <v-btn
+                    icon="mdi-chevron-left"
+                    variant="text"
+                    @click.stop="rail = !rail"
+                ></v-btn>
+              </template>
+            </v-list-item>
+          </v-list>
 
-                </v-row>
-                <v-row>
-                  <v-textarea
-                      v-model="newPost.postContent"
-                      label="输入正文"
-                      row-height="15"
-                      rows="3"
-                      variant="outlined"
-                      auto-grow
-                      clearable
-                      bg-color="white"
-                  ></v-textarea>
-                </v-row>
-                <v-row>
-                  <v-combobox
-                      v-model="chips"
-                      :items="tips"
-                      label="选择群组标签"
-                      variant="solo"
-                      chips
-                      clearable
-                      closable-chips
-                      multiple
-                  >
-                    <template v-slot:chip="{ props, item }">
-                      <v-chip v-bind="props">
-                        <strong>{{ item.raw }}</strong>&nbsp;
-                        <span>(默认时间倒叙)</span>
-                      </v-chip>
-                    </template>
-                  </v-combobox>
-                </v-row>
-                <v-row class="flex-column">
-                  <v-btn color="primary" @click="uploadPost">发布</v-btn>
-                </v-row>
-              </v-container>
-            </v-input>
-          </v-sheet>
-        </v-container>
-      </v-row>
-      <v-row justify="end">
-        <v-col>
-          <SearchPart :SendSerachResponse="GetSearchResponse"></SearchPart>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-container>
-          <v-row justify="center">
-            <v-infinite-scroll  @load="loadMore" :items="items">
-              <v-container v-for="(item, index) in items" :key="index" :item="item">
-                <v-sheet
-                    border="dashed md"
-                    color="surface-light"
-                    height="200"
-                    rounded="lg"
-                    width="750"
-                    class="hover-effect mx-0"
-                    @click="handleClick(item)"
-                ><PostItem :where="'post-list'"/></v-sheet>
-              </v-container>
-            </v-infinite-scroll>
-          </v-row>
-        </v-container>
-      </v-row>
-    </v-container>
-  </v-parallax>
+          <v-divider></v-divider>
+
+          <v-list density="compact" nav>
+            <v-list-item
+                prepend-icon="mdi-home-city"
+                title="Home"
+                value="home"
+            ></v-list-item>
+            <v-list-item
+                prepend-icon="mdi-account"
+                title="My Account"
+                value="account"
+                to="/personal-homepage"
+            ></v-list-item>
+            <v-list-item
+                prepend-icon="mdi-message"
+                title="Message"
+                value="message"
+            ></v-list-item>
+          </v-list>
+        </v-navigation-drawer>
+        <v-main style="height: 250px"></v-main>
+      </v-layout>
+    </v-card>
+
+    <!--    上侧导航-->
+
+
+    <!--    主界面-->
+    <v-main height="auto">
+      <v-container>
+        <v-tabs
+            bg-color="indigo-darken-2"
+            fixed-tabs
+            v-model="tab"
+        >
+          <v-tab text="Post" value="Post"></v-tab>
+          <v-tab text="File" value="File"></v-tab>
+          <v-tab text="Group" value="Group"></v-tab>
+        </v-tabs>
+        <v-tabs-window v-model="tab">
+          <v-tabs-window-item value="Post">
+            <PostList></PostList>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="File">
+            <FileList></FileList>
+          </v-tabs-window-item>
+          <v-tabs-window-item value="Group">
+            <GroupList></GroupList>
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </v-container>
+    </v-main>
+  </v-layout>
+
 </template>
 
 <style scoped>
@@ -223,5 +139,4 @@ const postTypes = [
   cursor: pointer; /* Change cursor to pointer on hover */
   outline: dashed 5px #706ccb;
 }
-
 </style>
