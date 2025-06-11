@@ -3,8 +3,6 @@ import { ref } from 'vue';
 import MarkdownRender from "@/components/MarkdownRender.vue";
 const displayText = ref('');
 
-
-
 defineProps(['where','postContent'])
 
 const groupTag = ref(['群组1', '群组2', '群组3'])

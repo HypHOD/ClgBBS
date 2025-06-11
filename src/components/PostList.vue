@@ -24,10 +24,6 @@ type Post = {
 }
 const PostList = ref<Post[]>([]);
 
-const ins = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-});
 const router = useRouter();
 const signInStore = useSignInStore();
 const newPost= reactive({
@@ -40,7 +36,7 @@ const newPost= reactive({
 // 上传帖子
 async function uploadPost() {
   // 发送请求
-  const res = await ins.post('/post/create', {
+  const res = await axios.post('/api/post/create', {
     userId: signInStore.userInfo.userId,
     postTitle: newPost.postTitle,
     postContent: newPost.postContent,

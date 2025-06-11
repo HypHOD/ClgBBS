@@ -4,14 +4,9 @@ import {ref, onMounted, shallowRef} from 'vue'
 import { useCreateAccountStore } from "@/store/CreateAccount.ts";
 import axios from "axios";
 
-
 const router = useRouter()
 const createAccountStore = useCreateAccountStore()
 
-const ins = axios.create({
-  baseURL: 'http://localhost:8080',
-  timeout: 1000,
-});
 const form = ref({
   username: '',
   password: '',
@@ -21,40 +16,29 @@ const form = ref({
   idCard:'',
 })
 
-// const handleSubmit = async () => {
-//   // 这里可以添加表单验证逻辑
-//     // 调用 store 中的 createAccount 方法
-//     createAccountStore.username = form.value.username
-//     createAccountStore.email = form.value.email
-//     createAccountStore.password = form.value.password
-//     createAccountStore.realName = form.value.realName
-//     createAccountStore.idCard = form.value.idCard
-//     try{
-//       await createAccountStore.createAccount()
-//       console.log('createAccount created')
-//     }catch (error){
-//       console.log(error)
-//       alert('注册失败')
-//     }
-//
-//     // 跳转到登录页面
-//     if (createAccountStore.success) {
-//       await router.push('/app-layout')
-//     }
-//
-//
-//   // router.push('/app-layout') // 假设主页面的路由是 /main-page
-// }
-
 async function handleSubmit() {
-  try{
-    const res = await ins.post('/user/register', {
+  try {
+    // 添加密码长度验证
+    if (form.value.password.length < 6 || form.value.password.length > 16) {
+      alert('密码长度必须在6-16个字符之间');
+      return;
+    }
+    
+    const res = await axios.post('/api/user/register', {
       username: form.value.username,
       password: form.value.password,
       email: form.value.email,
     })
-  }catch(err){
+    alert('注册成功')
+    console.log('success')
+  } catch(err) {
     console.log(err)
+    // 添加更友好的错误提示
+    if (err.response?.data?.message) {
+      alert(err.response.data.message);
+    } else {
+      alert('注册失败，请重试');
+    }
   }
 }
 

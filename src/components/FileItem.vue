@@ -6,14 +6,9 @@ import {useSignInStore} from "@/store/SignIn.ts";
 const signInStore = useSignInStore();
 const userId = signInStore.userInfo.userId;
 
-const ins = axios.create({
-  baseURL: 'API_URL',
-  timeout: 1000,
-});
-
 async function downloadFile(userId, fileId) {
   try {
-    const res = await ins.get(`/file/download?userId=${userId}&postId=${fileId}`);
+    const res = await axios.get(`/api/file/download?userId=${userId}&postId=${fileId}`);
     // 检查响应中是否包含有效的下载链接
     if (res.data && res.data.downloadUrl) {
       const downloadUrl = res.data.downloadUrl;

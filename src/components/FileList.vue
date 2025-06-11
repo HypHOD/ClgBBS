@@ -6,10 +6,7 @@ import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
 
-const ins = axios.create({
-  baseURL: 'API_URL',
-  timeout: 1000,
-});
+
 const router = useRouter();
 const signInStore = useSignInStore();
 
@@ -19,7 +16,7 @@ const postPrice = 10;
 
 async function getFileList() {
   try {
-    const res = await ins.get('/file/list?userId=' + userId);
+    const res = await axios.get('/api/file/list?userId=' + userId);
     console.log(res.data);
     return { code: 200, message: '获取成功', data: res.data };
   }catch(err) {

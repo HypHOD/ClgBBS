@@ -2,16 +2,13 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
-const ins = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-});
+
 
 const groupKey = ref('')
 
 async function joinGroup() {
   try{
-    const res = await ins.post(`/groups/${groupKey.value}/join`)
+    const res = await axios.post(`/api/groups/${groupKey.value}/join`)
     console.log(res.data)
     alert("Joined group #"+groupKey.value)
   }catch(err){

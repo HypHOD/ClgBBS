@@ -2,7 +2,6 @@ import {defineStore} from 'pinia'
 import axios from 'axios'
 
 const ins = axios.create({
-  baseURL: 'http://localhost:3000',
   timeout: 1000,
 });
 
@@ -28,7 +27,7 @@ export const useSignInStore = defineStore('signIn', {
       this.loading = true
       try {
         const res = await ins.post('/user/login', {
-          username: this.username,
+          username: this.userInfo.username,
           password: this.password
         })
         console.log(res)

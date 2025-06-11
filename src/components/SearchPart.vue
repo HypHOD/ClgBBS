@@ -19,11 +19,11 @@ async function onClick() {
     let response
 
     if (prefix === '!') {
-      response = await fetch(`/section/search/${searchText}`).then(res => res.json())
+      response = await fetch(`/api/section/search/${searchText}`).then(res => res.json())
     } else if (prefix === '@') {
-      response = await fetch(`/user/search/${searchText}`).then(res => res.json())
+      response = await fetch(`/api/user/search/${searchText}`).then(res => res.json())
     } else {
-      response = await fetch(`/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
+      response = await fetch(`/api/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
     }
 
     // emit('search-result', response)

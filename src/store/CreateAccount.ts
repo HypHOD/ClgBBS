@@ -2,7 +2,6 @@ import {defineStore} from 'pinia'
 import axios from 'axios'
 
 const ins = axios.create({
-  baseURL: 'http://localhost:8080',
   timeout: 1000,
 });
 export const useCreateAccountStore = defineStore('createAccount', {

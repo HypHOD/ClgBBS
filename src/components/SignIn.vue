@@ -2,38 +2,55 @@
 import { useRouter } from 'vue-router'
 import {ref, onMounted, shallowRef} from 'vue'
 import {useSignInStore} from "@/store/SignIn.ts"
+import axios from "axios";
 
 const router = useRouter()
 const signInStore = useSignInStore()
-
 
 const form = ref({
   email: '',
   password: ''
 })
 
-const handleSubmit = async () => {
-  try {
-    // 表单验证
-    if (!form.value.email || !form.value.password) {
-      alert('请填写完整登录信息')
+// const handleSubmit = async () => {
+//   try {
+//     // 表单验证
+//     if (!form.value.email || !form.value.password) {
+//       alert('请填写完整登录信息')
+//       return
+//     }
+//
+//     // 同步表单数据到Pinia store
+//     signInStore.userInfo.email = form.value.email
+//     signInStore.password = form.value.password
+//
+//     // 调用Pinia仓库中的登录方法
+//     await signInStore.signIn()
+//
+//     // 登录成功后跳转
+//     await router.push('/app-layout')
+//   } catch (error) {
+//     console.error('登录失败:', error)
+//     // 显示Pinia store中存储的错误信息
+//     alert(signInStore.error || '登录失败，请重试')
+//   }
+// }
+
+async function handleSubmit() {
+    // 同步表单数据到Pinia store
+    signInStore.userInfo.email = form.value.email
+    signInStore.password = form.value.password
+    try{
+      const res = await axios.post('/api/user/login',{username: form.value.email, password: form.value.password})
+      if(res.data.code === 200){
+        // 登录成功后跳转
+        await router.push('/app-layout')
+      }
+    }catch(err){
+      console.error(err)
+      alert('登录失败，请重试')
       return
     }
-
-    // 同步表单数据到Pinia store
-    signInStore.email = form.value.email
-    signInStore.password = form.value.password
-
-    // 调用Pinia仓库中的登录方法
-    await signInStore.signIn()
-
-    // 登录成功后跳转
-    await router.push('/app-layout')
-  } catch (error) {
-    console.error('登录失败:', error)
-    // 显示Pinia store中存储的错误信息
-    alert(signInStore.error || '登录失败，请重试')
-  }
 }
 </script>
 

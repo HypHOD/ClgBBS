@@ -6,21 +6,13 @@ import { useSignInStore } from '@/store/signIn'
 const signInStore = useSignInStore()
 const userId = signInStore.userInfo.userId
 
-const ins = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-});
-
 // 消息通知列表
-const groupList = ref([
-])
-type group = {
-
-}
+const groupList = ref([])
+type group = {}
 
 async function fetchMessageList() {
   try{
-    const res = await ins.get(`/notification?userId=${userId}&pageNum=$\{currentPage}&pageSize=5&unreadOnly=true`)
+    const res = await ins.get(`/api/notification?userId=${userId}&pageNum=$\{currentPage}&pageSize=5&unreadOnly=true`)
     if(res.data.code === 200){
       messageList.value = res.data.data.list
     }
@@ -31,7 +23,7 @@ async function fetchMessageList() {
 
 async function markAsRead(id: number) {
   try{
-    const res = await ins.patch('/notification/mark-read',{userId: userId, notificationIds: [id]})
+    const res = await axios.patch('/notification/mark-read',{userId: userId, notificationIds: [id]})
     if(res.data.code === 200){
       messageList.value = messageList.value.map(item => {
         if(item.id === id){

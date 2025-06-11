@@ -15,12 +15,12 @@
 
   onMounted(async () => {
     try{
-      form.value.email = signInStore.email
+      form.value.email = signInStore.userInfo.email
       // 向服务器请求用户信息
       // 成功后更新userInfo
-      if (signInStore.email) {
+      if (signInStore.userInfo.email) {
         await signInStore.fetchUserInfo()
-        console.log('成功获取用户信息', signInStore.email, signInStore.userInfo.uid)
+        console.log('成功获取用户信息', signInStore.userInfo.email, signInStore.userInfo.userId)
       }
     }catch (error){
       console.log('获取用户信息失败')

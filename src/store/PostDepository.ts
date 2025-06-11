@@ -15,7 +15,6 @@ export type Post = {
 }
 
 const ins = axios.create({
-    baseURL: 'http://localhost:8080',// 基地址
     timeout: 1000,
 })
 

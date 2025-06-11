@@ -8,16 +8,13 @@ import {useSignInStore} from '@/store/signIn'
 const signInStore = useSignInStore()
 
 const router = useRouter()
-const ins = axios.create({
-  baseURL: 'API_URL',
-  timeout: 1000,
-});
+
 // 打赏
 const donateDialog = ref(false)
 const donateAmount = ref(0)
 async function sendTips(userId: number, toUserId: number, amount: number){
   try{
-    const res = await ins.post('/balance/tip', { tipUserId: userId,postId: toUserId, amount: amount })
+    const res = await axios.post('/api/balance/tip', { tipUserId: userId,postId: toUserId, amount: amount })
     if(res.data.code === 1){
       alert('打赏成功')
     }

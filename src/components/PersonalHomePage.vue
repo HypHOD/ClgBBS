@@ -8,11 +8,6 @@ import MessageList from "@/components/MessageList.vue";
 
 const signInStore = useSignInStore();
 
-const ins = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000,
-});
-
 
 
 // 模拟数据数组
@@ -62,7 +57,7 @@ async function deleteFile(toDeletefileId: number) {
   // await new Promise(resolve => setTimeout(resolve, 1000));
   // fileList.value = fileList.value.filter(item => item.fileId!== fileId);
   try{
-    const res = await ins.get('/file/delete',{fileId: toDeletefileId})
+    const res = await axios.get('/api/file/delete',{fileId: toDeletefileId})
     alert('删除成功')
     fileList.value = fileList.value.filter(item => item.fileId!== toDeletefileId);
   }catch(error){
