@@ -1,90 +1,89 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import GroupItem from './GroupItem.vue'
-import axios from 'axios';
-import { useRouter  } from 'vue-router';
-import { useSignInStore } from '@/store/SignIn.ts';
-import JoinGroup from "@/components/JoinGroup.vue";
+import { ref } from 'vue'
+import axios from "axios";
+import { useSignInStore } from '@/store/signIn'
 
-const router = useRouter();
-const signInStore = useSignInStore();
-const newPost= reactive({
-  postTitle: '',
-  postContent: '',
-  uid: '',
-  isAnonymous: false
+const signInStore = useSignInStore()
+const userId = signInStore.userInfo.userId
+
+const ins = axios.create({
+  baseURL: 'http://localhost:3000',
+  timeout: 1000,
 });
 
-const handleSubmit = () => {
-  // 发送请求
-  if (!newPost.isAnonymous){
-    newPost.uid = signInStore.userInfo.uid;
-  }
-  axios.post('/api/post', newPost).then(res => {
-    console.log(res.data);
-    // 刷新页面
-    router.push('/post-list');
-  }).catch(err => {
-    console.log(err);
-  });
+// 消息通知列表
+const groupList = ref([
+])
+type group = {
+
 }
 
-// 模拟数据数组
-const groupList = ref([
-  { id: 1, content: 'Text', isBlurred: false , postClassify: '1' },
-  { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
-  { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { id: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
-]);
+async function fetchMessageList() {
+  try{
+    const res = await ins.get(`/notification?userId=${userId}&pageNum=$\{currentPage}&pageSize=5&unreadOnly=true`)
+    if(res.data.code === 200){
+      messageList.value = res.data.data.list
+    }
+  }catch(error){
+    console.log(error)
+  }
+}
 
-// 模拟每次加载的数据数量
-const itemsPerLoad = 3;
-
-// 加载更多数据的方法
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: groupList.value.length + i + 1,
-      content: `Item ${groupList.value.length + i + 1}`,
-    }));
-    groupList.value = [...groupList.value, ...newItems];
-  }, 1000);
-};
-
-
-const handleClick = (item) => {
-  console.log(item)
-  // 跳转到详情页
-  router.push('/post-detail/' + item.id);
+async function markAsRead(id: number) {
+  try{
+    const res = await ins.patch('/notification/mark-read',{userId: userId, notificationIds: [id]})
+    if(res.data.code === 200){
+      messageList.value = messageList.value.map(item => {
+        if(item.id === id){
+          item.isRead = true
+        }
+        return item
+      })
+    }
+  }catch(error){
+    console.log(error)
+  }
 }
 
 </script>
 
 <template>
   <v-container>
-        <v-row>
-          <JoinGroup></JoinGroup>
-        </v-row>
-        <hr>
-          <v-infinite-scroll  @load="loadMore" :items="groupList" >
-            <v-container v-for="(item, index) in groupList" :key="index" :item="item">
-              <v-sheet
-                  border="dashed md"
-                  color="surface-light"
-                  height="200"
-                  rounded="lg"
-                  width="100%"
-                  class="hover-effect"
-                  @click="handleClick(item)"
-              ><GroupItem></GroupItem></v-sheet>
-            </v-container>
-          </v-infinite-scroll>
-
+    <v-row>
+      <v-col v-for="(item) in messageList" :key="item.id" cols="3" @click="()=> markAsRead(item.id)">
+        <v-card
+            :class="{ 'dark-card': item.isRead }"
+            :color="item.isRead ? 'grey darken-3' : 'white'"
+            :text-color="item.isRead ? 'white' : 'black'"
+            @click="()=> markAsRead(item.id)"
+        >
+          <v-card-title>
+            <v-row>
+              <v-col>
+                <span>{{ item.content }}</span>
+              </v-col>
+              <v-col>
+                <v-chip small :color="item.isRead ? 'grey darken-2' : 'primary'">{{ item.type }}</v-chip>
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-card-text>
+            <span>#{{ item.timestamp }}</span>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 
 </template>
 
 <style scoped>
+.dark-card {
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
 
+.dark-card:hover {
+  opacity: 0.9;
+}
 </style>

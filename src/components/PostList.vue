@@ -6,7 +6,8 @@ import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
 import SearchPart from "@/components/SearchPart.vue";
 
-
+const groupSelect = ref(null)
+const groupList = ['Default']
 const tips = ['分区1', '分区2', '分区3']
 const chips = ref(['Default'])
 
@@ -106,31 +107,17 @@ const itemsPerLoad = 3;
 const loadMore = async () => {
   // 如果正在加载或没有更多数据，直接返回
   if (isLoading.value || !hasMore.value) return;
-
   try {
     isLoading.value = true;
-
-    // 构建查询参数
     const params = {
       ...searchParams,
       pageNum: searchParams.pageNum + 1 // 请求下一页
     };
-
-    // 发送请求
     const response = await ins.get('/post/search', { params });
-
-    // 处理响应数据
     const { items, total } = response.data;
-
-    // 更新数据列表
     items.value = [...items.value, ...items];
-
-    // 更新分页信息
     searchParams.pageNum += 1;
-
-    // 判断是否还有更多数据
     hasMore.value = items.length > 0 && items.value.length < total;
-
   } catch (error) {
     console.error('加载更多数据失败:', error);
 
@@ -145,12 +132,10 @@ const loadMore = async () => {
       // 请求设置时出错
       errorMessage.value = '请求配置错误';
     }
-
   } finally {
     isLoading.value = false;
   }
 };
-
 
 const handleClick = (item) => {
   console.log(item)
@@ -158,22 +143,53 @@ const handleClick = (item) => {
   router.push('/post-detail/' + item.id);
 }
 
-
-
 const GetSearchResponse = (response) => {
   console.log(response)
   items.value = response.data.data
 }
 
+// 搜索模块
+const emit = defineEmits(['search-result'])
+const loaded = ref(false)
+const loading = ref(false)
+const search = ref('')
+const selectGroup = ref('')
+
+async function onClick() {
+  if (!search.value.trim()) return // 避免空搜索
+
+  loading.value = true
+  loaded.value = false
+
+  try {
+    const prefix = search.value[0] || ''
+    const searchText = search.value.slice(1)
+    let response
+
+    if (prefix === '!') {
+      response = await fetch(`/section/search/${searchText}`).then(res => res.json())
+    } else if (prefix === '@') {
+      response = await fetch(`/user/search/${searchText}`).then(res => res.json())
+    } else {
+      response = await fetch(`/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
+    }
+
+    // emit('search-result', response)
+    defineProps({ searchResult: response })
+  } catch (error) {
+
+    console.error('搜索出错:', error)
+    // emit('search-result', { code: 500, message: '网络错误', data: null })
+  } finally {
+    loading.value = false
+    loaded.value = true
+  }
+}
+
+
 onMounted(() => {
   GetPostList();
 }, { wait: true });
-
-const postTypes = [
-  '闲聊',
-  '吐槽',
-  '问答',
-];
 
 </script>
 
@@ -211,23 +227,36 @@ const postTypes = [
                   ></v-textarea>
                 </v-row>
                 <v-row>
-                  <v-combobox
-                      v-model="chips"
-                      :items="tips"
-                      label="选择群组标签"
-                      variant="solo"
-                      chips
-                      clearable
-                      closable-chips
-                      multiple
-                  >
-                    <template v-slot:chip="{ props, item }">
-                      <v-chip v-bind="props">
-                        <strong>{{ item.raw }}</strong>&nbsp;
-                        <span>(默认时间倒叙)</span>
-                      </v-chip>
-                    </template>
-                  </v-combobox>
+<!--                  <v-col>-->
+<!--                    <v-combobox-->
+<!--                        v-model="chips"-->
+<!--                        :items="tips"-->
+<!--                        label="选择帖子标签"-->
+<!--                        variant="solo"-->
+<!--                        chips-->
+<!--                        clearable-->
+<!--                        closable-chips-->
+<!--                        multiple-->
+<!--                    >-->
+<!--                      <template v-slot:chip="{ props, item }">-->
+<!--                        <v-chip v-bind="props">-->
+<!--                          <strong>{{ item.raw }}</strong>&nbsp;-->
+<!--                          <span>(默认时间倒叙)</span>-->
+<!--                        </v-chip>-->
+<!--                      </template>-->
+<!--                    </v-combobox>-->
+<!--                  </v-col>-->
+                  <v-col>
+                    <v-select
+                        v-model="groupSelect"
+                        :items="groupList"
+                        hint="选择要发送的群组"
+                        label="Select"
+                        multiple
+                        persistent-hint
+                    ></v-select>
+                  </v-col>
+
                 </v-row>
                 <v-row class="flex-column">
                   <v-btn color="primary" @click="uploadPost">发布</v-btn>
@@ -239,7 +268,36 @@ const postTypes = [
       </v-row>
       <v-row justify="end">
         <v-col>
-          <SearchPart :SendSerachResponse="GetSearchResponse"></SearchPart>
+          <v-card class="mx-auto" color="surface-light">
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-card-text>
+                    <v-text-field
+                        v-model="search"
+                        :loading="loading"
+                        append-inner-icon="mdi-magnify"
+                        density="compact"
+                        label='<!>分区搜索 <@>uid搜索'
+                        variant="solo"
+                        hide-details
+                        single-line
+                        @click:append-inner="onClick"
+                        @keyup.enter="onClick"
+                    ></v-text-field>
+                  </v-card-text>
+                </v-col>
+                <v-col>
+                  <v-select
+                      label="选择群组"
+                      v-model="selectGroup"
+                      :items="['Group1', 'Group2', 'Group3']"
+                      @change=""
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
         </v-col>
       </v-row>
       <v-row>

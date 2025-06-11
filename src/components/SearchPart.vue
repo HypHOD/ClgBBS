@@ -5,7 +5,7 @@ const emit = defineEmits(['search-result'])
 const loaded = ref(false)
 const loading = ref(false)
 const search = ref('')
-const selectSection = ref('')
+const selectGroup = ref('')
 
 async function onClick() {
   if (!search.value.trim()) return // 避免空搜索
@@ -61,9 +61,10 @@ async function onClick() {
       </v-col>
       <v-col>
         <v-select
-            label="选择分区"
-            v-model="selectSection"
-            :items="['分区1', '分区2', '分区3']"
+            label="选择群组"
+            v-model="selectGroup"
+            :items="['Group1', 'Group2', 'Group3']"
+            @change=""
         ></v-select>
       </v-col>
     </v-row>

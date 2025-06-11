@@ -9,22 +9,19 @@ import MessageList from "@/components/MessageList.vue";
 
 const signInStore = useSignInStore();
 
-const links = [
-  'Home',
-  'About Us',
-  'Team',
-  'Services',
-  'Blog',
-  'Contact Us',
-]
-
 const ins = axios.create({
   baseURL: 'http://localhost:3000',
   timeout: 1000,
 });
 
-// 模拟数据数组
+//模拟群组管理
+const groupList = ref([
+  { groupId: 1, groupName: '前端群', groupClassify: '1' },
+  { groupId: 2, groupName: '后端群', groupClassify: '2' },
+  { groupId: 3, groupName: '设计群', groupClassify: '3' },
+]);
 
+// 模拟数据数组
 const postList = ref([
   { postId: 1, content: 'Text', isBlurred: false , postClassify: '1' },
   { postId: 2, content: 'Image', isBlurred: false , postClassify: '2' },
@@ -132,6 +129,7 @@ const dialog = shallowRef(false)
             <v-tab prepend-icon="mdi-lock" text="帖子管理" value="option-2"></v-tab>
             <v-tab prepend-icon="mdi-access-point" text="状态信息" value="option-3"></v-tab>
             <v-tab prepend-icon="mdi-bell-ring" text="消息通知" value="option-4"></v-tab>
+            <v-tab prepend-icon="mdi-group" text="群组管理" value="option-5"></v-tab>
           </v-tabs>
         </v-sheet>
       </v-row>
@@ -240,6 +238,15 @@ const dialog = shallowRef(false)
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
+
+          <v-tabs-window-item value="option-5" >
+            <v-card flat>
+              <v-card-text>
+                <GroupList></GroupList>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
+
         </v-tabs-window>
       </v-sheet>
     </v-container>
