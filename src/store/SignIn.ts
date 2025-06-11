@@ -1,9 +1,6 @@
 import {defineStore} from 'pinia'
 import axios from 'axios'
-
-const ins = axios.create({
-  timeout: 1000,
-});
+import router from "@/router";
 
 export const useSignInStore = defineStore('signIn', {
   state: () => ({
@@ -26,7 +23,7 @@ export const useSignInStore = defineStore('signIn', {
     async signIn() {
       this.loading = true
       try {
-        const res = await ins.post('/user/login', {
+        const res = await axios.post('/api/user/login', {
           username: this.userInfo.username,
           password: this.password
         })
@@ -43,6 +40,22 @@ export const useSignInStore = defineStore('signIn', {
         throw error
       }
     },
+    async signOut() {
+      this.loading = false
+      this.userInfo = {
+        token: '',
+        userId: null,
+        username: '',
+        email: '',
+        transferCode: '',
+        unreadNotifications: 0,
+        coinsBalance: 0,
+        isBanned: false,
+        realNameAuth: false,
+      }
+      this.error = ''
+      await router.push('/sign-in')
+    }
   },
 })
 

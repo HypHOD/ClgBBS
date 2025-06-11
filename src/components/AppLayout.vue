@@ -4,22 +4,19 @@ import PostList from "./PostList.vue";
 import axios from 'axios';
 import { useRouter , RouterView , RouterLink } from 'vue-router';
 import FileList from "@/components/FileList.vue";
+import { useSignInStore } from '@/store/SignIn.ts';
+
+const signInStore = useSignInStore();
+
 const router = useRouter();
-
-
-// 模拟群组数据
-const messageList = ref([
-  { fromUser: 'user1', content: 'user1' },
-  { fromUser: 'user1', content: 'user1' },
-  { fromUser: 'user1', content: 'user1' },
-]);
-
-const order = shallowRef(0)
 
 const tab = ref('Post')
 const drawer = ref(true)
 const rail = ref(true)
-const rail1 = ref(false)
+const logout = () => {
+  signInStore.signOut();
+}
+
 </script>
 
 <template>
@@ -35,8 +32,8 @@ const rail1 = ref(false)
           <v-list>
             <v-list-item
                 prepend-avatar="https://randomuser.me/api/portraits/men/2.jpg"
-                title="{{ user.name }}"
             >
+              <v-list-item-title>{{signInStore.userInfo.username}}</v-list-item-title>
               <template v-slot:append>
                 <v-btn
                     icon="mdi-chevron-left"
@@ -74,9 +71,6 @@ const rail1 = ref(false)
         <v-main style="height: 700px"></v-main>
       </v-layout>
     </v-card>
-
-    <!--    上侧导航-->
-
 
     <!--    主界面-->
     <v-main height="auto">

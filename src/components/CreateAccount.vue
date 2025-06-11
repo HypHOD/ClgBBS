@@ -14,6 +14,20 @@ const form = ref({
   realNameAuth: false,
   realName: '',
   idCard:'',
+  avatar: '',
+})
+
+// 生成随机头像
+const getRandomAvatar = () => {
+  const styles = ['adventurer', 'avataaars', 'bottts', 'pixel-art', 'identicon'];
+  const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+  const seed = Math.random().toString(36).substring(7);
+  return `https://api.dicebear.com/7.x/${randomStyle}/svg?seed=${seed}`;
+}
+
+// 在组件挂载时生成随机头像
+onMounted(() => {
+  form.value.avatar = getRandomAvatar();
 })
 
 async function handleSubmit() {
@@ -28,6 +42,7 @@ async function handleSubmit() {
       username: form.value.username,
       password: form.value.password,
       email: form.value.email,
+      avatar: form.value.avatar,
     })
     alert('注册成功')
     console.log('success')
@@ -54,6 +69,17 @@ async function handleSubmit() {
       <p class="mt-2 text-lg leading-8 text-gray-600">在这里注册账户</p>
     </div>
     <form @submit.prevent="handleSubmit" class="mx-auto mt-16 max-w-xl sm:mt-20">
+      <div class="flex flex-col items-center mb-8">
+        <img :src="form.avatar" alt="随机头像" class="w-24 h-24 rounded-full mb-4" />
+        <button 
+          type="button" 
+          @click="form.avatar = getRandomAvatar()"
+          class="text-sm text-indigo-600 hover:text-indigo-500"
+        >
+          换一个头像
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
         <div class="sm:col-span-2">
           <label for="username" class="block text-sm font-semibold text-gray-900">用户名</label>
