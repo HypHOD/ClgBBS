@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted, shallowRef} from 'vue'
 import UserState from "@/components/UserState.vue";
-import FileItem from "@/components/FileItem.vue";
 import PostItem from "@/components/PostItem.vue";
 import axios from "axios";
 import {useSignInStore} from "@/store/SignIn";
@@ -14,12 +13,7 @@ const ins = axios.create({
   timeout: 1000,
 });
 
-//模拟群组管理
-const groupList = ref([
-  { groupId: 1, groupName: '前端群', groupClassify: '1' },
-  { groupId: 2, groupName: '后端群', groupClassify: '2' },
-  { groupId: 3, groupName: '设计群', groupClassify: '3' },
-]);
+
 
 // 模拟数据数组
 const postList = ref([
@@ -39,9 +33,9 @@ const loadMorePost = () => {
 
 // 只访问自己上传的文件
 const fileList = ref([
-  { fileId: 1, fileClass: 'PDF', downloadCount: 100 },
-  { fileId: 2, fileClass: 'Video', downloadCount: 10 },
-  { fileId: 3, fileClass: 'ZIP', downloadCount: 1 },
+  { fileId: 1, fileClass: 'PDF', fileName: 'xxx小测' , filePrice: 10 },
+  { fileId: 2, fileClass: 'PDF', fileName: 'xxx电子版教材' , filePrice: 20 },
+  { fileId: 3, fileClass: 'ZIP', fileName: 'xxx资料包' , filePrice: 30 },
 ]);
 
 const fileTypes = [
@@ -154,7 +148,19 @@ const dialog = shallowRef(false)
                             width="100%"
                             class="hover-effect"
                             v-if="fileTypes.includes(item.fileClass)"
-                        ><FileItem :fileId="item.fileId" :fileClass="item.fileClass" :downloadCount="item.downloadCount"></FileItem></v-sheet>
+                        >
+                          <v-card outlined class="mx-1 my-1">
+                            <v-card-title>
+                              <h3 class="headline mb-0">文件名称: {{ item.fileName }} </h3>
+                            </v-card-title>
+                            <v-card-text> 文件类型: {{ item.fileClass }}  </v-card-text>
+                            <v-card-text> 文件价格: {{ item.filePrice }}  </v-card-text>
+                            <v-chip small>
+                              <v-icon left>mdi-clock</v-icon>
+                              // 上传时间
+                            </v-chip>
+                          </v-card>
+                        </v-sheet>
                       </v-col>
                       <v-col cols="2">
                         <v-sheet
@@ -242,7 +248,6 @@ const dialog = shallowRef(false)
           <v-tabs-window-item value="option-5" >
             <v-card flat>
               <v-card-text>
-                <GroupList></GroupList>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
