@@ -2,11 +2,16 @@
 import { useRouter } from 'vue-router'
 import {ref, onMounted, shallowRef} from 'vue'
 import { useCreateAccountStore } from "@/store/CreateAccount.ts";
+import axios from "axios";
 
 
 const router = useRouter()
 const createAccountStore = useCreateAccountStore()
 
+const ins = axios.create({
+  baseURL: 'http://localhost:8080',
+  timeout: 1000,
+});
 const form = ref({
   username: '',
   password: '',
@@ -16,31 +21,41 @@ const form = ref({
   idCard:'',
 })
 
-const handleSubmit = async () => {
-  // 这里可以添加表单验证逻辑
+// const handleSubmit = async () => {
+//   // 这里可以添加表单验证逻辑
+//     // 调用 store 中的 createAccount 方法
+//     createAccountStore.username = form.value.username
+//     createAccountStore.email = form.value.email
+//     createAccountStore.password = form.value.password
+//     createAccountStore.realName = form.value.realName
+//     createAccountStore.idCard = form.value.idCard
+//     try{
+//       await createAccountStore.createAccount()
+//       console.log('createAccount created')
+//     }catch (error){
+//       console.log(error)
+//       alert('注册失败')
+//     }
+//
+//     // 跳转到登录页面
+//     if (createAccountStore.success) {
+//       await router.push('/app-layout')
+//     }
+//
+//
+//   // router.push('/app-layout') // 假设主页面的路由是 /main-page
+// }
+
+async function handleSubmit() {
   try{
-    // 调用 store 中的 createAccount 方法
-    createAccountStore.username = form.value.username
-    createAccountStore.email = form.value.email
-    createAccountStore.password = form.value.password
-    createAccountStore.realName = form.value.realName
-    createAccountStore.idCard = form.value.idCard
-    await createAccountStore.createAccount()
-
-    // 跳转到登录页面
-    if (createAccountStore.success) {
-      alert('注册成功')
-      await router.push('/app-layout')
-    } else {
-      alert('注册失败')
-    }
-  }catch(error){
-    console.error(error)
-    alert('注册失败')
+    const res = await ins.post('/user/register', {
+      username: form.value.username,
+      password: form.value.password,
+      email: form.value.email,
+    })
+  }catch(err){
+    console.log(err)
   }
-
-
-  // router.push('/app-layout') // 假设主页面的路由是 /main-page
 }
 
 </script>

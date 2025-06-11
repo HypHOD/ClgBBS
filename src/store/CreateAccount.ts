@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import axios from 'axios'
 
 const ins = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:8080',
   timeout: 1000,
 });
 export const useCreateAccountStore = defineStore('createAccount', {
@@ -38,30 +38,6 @@ export const useCreateAccountStore = defineStore('createAccount', {
         this.success = false
         this.loading = false
       }
-      // try {
-      //   const response = await fetch('/user/register', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       username: this.username,
-      //       password: this.password,
-      //       email: this.email,
-      //       relNameAuth: this.realNameAuth,
-      //       realName: this.realName,
-      //       idCard: this.idCard,
-      //     }),
-      //   })
-      //   this.error = ''
-      //   this.success = true
-      //   this.loading = false
-      //   return data
-      // } catch (error) {
-      //   this.error = error.message
-      //   this.success = false
-      //   this.loading = false
-      // }
     },
     reset() {
       this.username = ''
