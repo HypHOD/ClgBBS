@@ -6,7 +6,6 @@ import {useSignInStore} from "@/store/SignIn.ts";
 const signInStore = useSignInStore();
 const userId = signInStore.userInfo.userId;
 
-defineProps(['fileId', 'fileClass', 'downloadCount']);
 const ins = axios.create({
   baseURL: 'API_URL',
   timeout: 1000,
@@ -33,6 +32,8 @@ async function downloadFile(userId, fileId) {
   }
 }
 
+defineProps(['item']);
+
 </script>
 
 <template>
@@ -41,10 +42,10 @@ async function downloadFile(userId, fileId) {
       <v-col>
         <v-card outlined class="mx-1 my-1">
           <v-card-title>
-            <h3 class="headline mb-0">文件名称: {{ fileId }} </h3>
+            <h3 class="headline mb-0">文件名称: {{ item.fileName }} </h3>
           </v-card-title>
-          <v-card-text> 文件类型: {{ fileClass }}  </v-card-text>
-          <v-card-text> 文件下载次数: {{ downloadCount }}  </v-card-text>
+          <v-card-text> 文件类型: {{ item.fileClass }}  </v-card-text>
+          <v-card-text> 文件价格: {{ item.filePrice }}  </v-card-text>
           <v-chip small>
             <v-icon left>mdi-clock</v-icon>
             // 上传时间
@@ -53,7 +54,7 @@ async function downloadFile(userId, fileId) {
       </v-col>
       <v-col cols="2">
         <v-sheet border="dashed md" color="surface-light" height="100%" rounded="lg" width="auto" class="mx-0 my-0">
-          <v-btn @click="downloadFile(fileId)" target="_blank" class="mx-0 my-0" width="100%" height="100%">
+          <v-btn @click="downloadFile(userId, item.fileId)" target="_blank" class="mx-0 my-0" width="100%" height="100%">
               <v-icon left>mdi-download</v-icon>
           </v-btn>
         </v-sheet>

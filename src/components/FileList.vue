@@ -30,9 +30,9 @@ async function getFileList() {
 
 // 模拟数据数组
 const fileList = ref([
-  { fileId: 1, fileClass: 'PDF'},
-  { fileId: 2, fileClass: 'Video'},
-  { fileId: 3, fileClass: 'ZIP'},
+  { fileId: 1, fileClass: 'PDF', fileName: 'xxx小测' , filePrice: 10 },
+  { fileId: 2, fileClass: 'PDF', fileName: 'xxx电子版教材' , filePrice: 20 },
+  { fileId: 3, fileClass: 'ZIP', fileName: 'xxx资料包' , filePrice: 30 },
 ]);
 
 const fileTypes = [
@@ -215,7 +215,7 @@ async function downloadAFile(userId, fileId) {
                 class="hover-effect"
                 v-if="fileTypes.includes(item.fileClass)"
                 @click="downloadFile(userId, postId)"
-            ><FileItem></FileItem></v-sheet>
+            ><FileItem :item="item"></FileItem></v-sheet>
           </v-container>
         </v-infinite-scroll>
       </v-container>
