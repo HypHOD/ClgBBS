@@ -130,6 +130,23 @@ async function downloadFile(userId, postId) {
     return { code: -3, msg: '服务器内部错误', data: null };
   }
 }
+
+// 下载指定ID的文件
+const fileId = ref(null);
+
+async function downloadAFile(userId, fileId) {
+  try {
+    const res = await ins.get(`/file/download2?fileId=${fileId}&userId=${userId}`);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([res.data]));
+    a.download = 'download.txt';
+    a.click();
+    a.remove();
+
+  }catch(err) {
+    console.error('<UNK>:', err);
+  }
+}
 </script>
 
 <template>
@@ -149,10 +166,22 @@ async function downloadFile(userId, postId) {
             label="选择上传的文件类型"
             v-model="fileClass"
         ></v-select>
-        <v-btn class="bg-green mx-2" @click="uploadFile(fileBody, fileClass)">
+      </v-col>
+      <v-col cols="2">
+        <v-btn class="bg-green mx-2" @click="uploadFile(userId,fileId)">
           <v-icon>mdi-cloud-upload</v-icon>
           上传文件
         </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-text-field label="File ID" v-model="fileId"></v-text-field>
+      </v-col>
+      <v-col cols="2">
+        <v-btn color="primary" @click="downloadAFile(userId, postId)">
+          <v-icon>mdi-cloud-download</v-icon>
+          下载文件</v-btn>
       </v-col>
     </v-row>
     <v-row>

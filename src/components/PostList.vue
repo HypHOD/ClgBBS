@@ -36,9 +36,9 @@ const newPost= reactive({
   isAnonymous: false
 });
 
+// 上传帖子
 async function uploadPost() {
   // 发送请求
-
   const res = await ins.post('/post/create', {
     userId: signInStore.userInfo.userId,
     postTitle: newPost.postTitle,
@@ -75,7 +75,7 @@ async function GetPostList() {
 
 }
 
-const loadMoreWithHttp = () => {
+const loadMoreFromHttp = () => {
   // 模拟异步加载数据
   setTimeout(() => {
     GetPostList();
@@ -100,9 +100,7 @@ const errorMessage = ref('');
 // 模拟数据数组
 const items = ref([
   { id: 1, content: '$y=x^2$', isBlurred: false , postClassify: '1' },
-  { id: 2, content: 'Image', isBlurred: false , postClassify: '2' },
-  { id: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { id: 4, content: '#123', isBlurred: true , postClassify: '4' },
+  { id: 2, content: '测试文本1', isBlurred: false , postClassify: '2' },
 ]);
 const itemsPerLoad = 3;
 const loadMore = async () => {
@@ -180,7 +178,6 @@ const postTypes = [
 </script>
 
 <template>
-
   <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
     <v-container>
       <v-row>
@@ -248,7 +245,7 @@ const postTypes = [
       <v-row>
         <v-container>
           <v-row justify="center">
-            <v-infinite-scroll  @load="loadMore" :items="items">
+            <v-infinite-scroll  @load="loadMoreFromHttp()" :items="items">
               <v-container v-for="(item, index) in items" :key="index" :item="item">
                 <v-sheet
                     border="dashed md"

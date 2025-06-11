@@ -8,18 +8,19 @@ const ins = axios.create({
 
 export const useSignInStore = defineStore('signIn', {
   state: () => ({
-    email: '',
-    username: '',
     password: '',
     error: '',
     loading: false,
     userInfo: {
       token: '',
       userId: null,
-      // avatar: '',
+      username: '',
+      email: '',
       transferCode: '',
       unreadNotifications: 0,
-      coins: 0,
+      coinsBalance: 0,
+      isBanned: false,
+      realNameAuth: false,
     }
   }),
   actions: {

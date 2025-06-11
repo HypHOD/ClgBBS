@@ -5,6 +5,7 @@ import FileItem from "@/components/FileItem.vue";
 import PostItem from "@/components/PostItem.vue";
 import axios from "axios";
 import {useSignInStore} from "@/store/SignIn";
+import MessageList from "@/components/MessageList.vue";
 
 const signInStore = useSignInStore();
 
@@ -27,17 +28,15 @@ const ins = axios.create({
 const postList = ref([
   { postId: 1, content: 'Text', isBlurred: false , postClassify: '1' },
   { postId: 2, content: 'Image', isBlurred: false , postClassify: '2' },
-  { postId: 3, content: 'Video', isBlurred: false , postClassify: '3' },
-  { postId: 4, content: 'https://testURL.com', isBlurred: true , postClassify: '4' },
 ]);
 const loadMorePost = () => {
   // 模拟异步加载数据
   setTimeout(() => {
     const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: items.value.length + i + 1,
-      content: `Item ${items.value.length + i + 1}`,
+      id: postList.value.length + i + 1,
+      content: `Item ${postList.value.length + i + 1}`,
     }));
-    items.value = [...items.value, ...newItems];
+    postList.value = [...postList.value, ...newItems];
   }, 1000);
 };
 
@@ -129,9 +128,10 @@ const dialog = shallowRef(false)
               color="primary"
               direction="vertical"
           >
-            <v-tab prepend-icon="mdi-account" text="File" value="option-1"></v-tab>
-            <v-tab prepend-icon="mdi-lock" text="Post" value="option-2"></v-tab>
-            <v-tab prepend-icon="mdi-access-point" text="State" value="option-3"></v-tab>
+            <v-tab prepend-icon="mdi-account" text="文件管理" value="option-1"></v-tab>
+            <v-tab prepend-icon="mdi-lock" text="帖子管理" value="option-2"></v-tab>
+            <v-tab prepend-icon="mdi-access-point" text="状态信息" value="option-3"></v-tab>
+            <v-tab prepend-icon="mdi-bell-ring" text="消息通知" value="option-4"></v-tab>
           </v-tabs>
         </v-sheet>
       </v-row>
@@ -198,7 +198,7 @@ const dialog = shallowRef(false)
                             rounded="lg"
                             width="100%"
                             class="hover-effect"
-                        ><PostItem :where="'homepage'"></PostItem></v-sheet>
+                        ><PostItem :where="'homepage'" :post-content="item.content"></PostItem></v-sheet>
                       </v-col>
                       <v-col cols="2">
                         <v-sheet
@@ -223,7 +223,6 @@ const dialog = shallowRef(false)
                     </v-row>
                   </v-container>
                 </v-infinite-scroll>
-
           </v-tabs-window-item >
 
           <v-tabs-window-item value="option-3" >
@@ -233,20 +232,21 @@ const dialog = shallowRef(false)
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
+
+          <v-tabs-window-item value="option-4" >
+            <v-card flat>
+              <v-card-text>
+                <MessageList></MessageList>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
         </v-tabs-window>
       </v-sheet>
     </v-container>
   </div>
 
+<!--  页脚-->
   <v-footer class="d-flex align-center justify-center ga-2 flex-wrap flex-grow-1 py-3" color="surface-light">
-    <v-btn
-        v-for="link in links"
-        :key="link"
-        :text="link"
-        variant="text"
-        rounded
-    ></v-btn>
-
     <div class="flex-1-0-100 text-center mt-2">
       {{ new Date().getFullYear() }} — <strong>CLGBBS</strong>
     </div>

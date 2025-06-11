@@ -4,7 +4,7 @@ const UserState = reactive({
   userlevel: "普通用户",
   usercoin: 0,
   uid: "123456",
-  nickname: "小明",
+  nickname: "Default",
   avatar: "@/assets/cdm.jpg",
 });
 
@@ -12,7 +12,6 @@ const tempNickname = ref("");
 const tempAvatar = ref("");
 const isEditDialogOpen = ref(false);
 const isLoading = ref(false);
-const fileInputRef = ref<HTMLInputElement>();
 
 // 打开编辑对话框
 const openEditDialog = () => {
@@ -25,7 +24,6 @@ const openEditDialog = () => {
 // 保存修改
 const saveChanges = async () => {
   isLoading.value = true; // 显示加载状态
-
   try {
     // 模拟异步请求（实际需替换为接口调用）
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -35,7 +33,6 @@ const saveChanges = async () => {
     UserState.avatar = tempAvatar.value.startsWith('data:image')
         ? `http://your-api/upload/${Date.now()}.png` // 示例上传地址
         : tempAvatar.value;
-
     // 关闭对话框
     isEditDialogOpen.value = false;
     // 提示成功（可添加通知组件）
