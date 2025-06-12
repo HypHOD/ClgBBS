@@ -37,8 +37,6 @@ const fileTypes = [
   'Video',
   'ZIP'
 ];
-const fileBody = ref(null);
-const fileClass=ref('');
 
 // 搜索参数
 const searchParams = reactive({
@@ -96,21 +94,55 @@ const loadMore = async () => {
 const chips = ref(['Default'])
 // const dialog = ref(false);
 
+const fileBody = ref<null | File[]>(null);
+const fileClass=reactive({
+  postId: 1001,
+  fileComment: '测试文件',
+  fileValue: 0,
+  fileName: 'test'
+})
+
+const dialog = ref(false);
+
 async function uploadFile(fileBody, fileClass) {
+  if (!fileBody || fileBody.length === 0) {
+    alert('请选择要上传的文件');
+    return { code: 400, message: '请选择要上传的文件', data: null };
+  }
+
+  // 验证文件大小（例如限制为10MB）
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  for (const file of fileBody) {
+    if (file.size > maxSize) {
+      alert('文件大小不能超过10MB');
+      return { code: 400, message: '文件大小不能超过10MB', data: null };
+    }
+  }
+//解决报错
+  const json = JSON.stringify(fileClass);
+  const blob = new Blob([json], { type: 'application/json'});
   const formData = new FormData();
-  formData.append('fileBody', fileBody);
-  formData.append('fileClass', JSON.stringify(fileClass));
+  // 确保文件被正确添加到 FormData
+  for (const file of fileBody) {
+    formData.append('fileBody', file, file.name);
+  }
+  formData.append('fileClass', blob, 'fileClass.json');
 
   try {
-    const res = await ins.post('/upload', formData, {
+    const res = await axios.post('/api/file/upload', formData, {
       headers: {
-        'Content-Type':'multipart/form-data'
-      }
-    })
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${signInStore.userInfo.token}`
+      },
+      // 确保 FormData 被正确处理
+      transformRequest: [(data) => data]
+    });
     console.log(res.data);
+    alert('上传成功');
     return { code: 200, message: '上传成功', data: null };
   } catch (error) {
     console.error('请求出错:', error);
+    alert('上传失败，请重试');
     return { code: 500, message: '服务器内部错误', data: null };
   }
 }
@@ -153,21 +185,15 @@ async function downloadAFile(userId, fileId) {
         <v-file-input
             label="File input"
             multiple
+            show-size
             v-model="fileBody"
         ></v-file-input>
       </v-col>
-      <v-col>
-        <v-select
-            :items="fileTypes"
-            :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-            label="选择上传的文件类型"
-            v-model="fileClass"
-        ></v-select>
-      </v-col>
+
       <v-col cols="2">
-        <v-btn class="bg-green mx-2" @click="uploadFile(userId,fileId)">
+        <v-btn class="bg-green mx-2" @click="dialog = true">
           <v-icon>mdi-cloud-upload</v-icon>
-          上传文件
+          编辑信息
         </v-btn>
       </v-col>
     </v-row>
@@ -218,12 +244,39 @@ async function downloadAFile(userId, fileId) {
       </v-container>
     </v-row>
   </v-container>
+
+  <v-dialog v-model="dialog" max-width="500px">
+    <v-card>
+      <v-card-title>
+        <span class="headline">编辑信息</span>
+      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col>
+            <v-text-field label="文件名称" v-model="fileClass.fileName"></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field label="文件价格" v-model="fileClass.fileValue"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-text-field label="文件描述" v-model="fileClass.fileComment"></v-text-field>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn text @click="dialog = false">取消</v-btn>
+        <v-btn text @click="uploadFile(fileBody, fileClass)">确定</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>
 .hover-effect:hover {
-  background-color: #e0f7fa; /* Light blue background on hover */
-  cursor: pointer; /* Change cursor to pointer on hover */
+  background-color: #e0f7fa;
+  cursor: pointer;
   outline: dashed 5px #706ccb;
 }
 </style>
