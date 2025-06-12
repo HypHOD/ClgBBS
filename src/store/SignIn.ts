@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia'
 import axios from 'axios'
 import router from "@/router";
+import {number} from "zod";
 
 export const useSignInStore = defineStore('signIn', {
   state: () => ({
@@ -8,10 +9,10 @@ export const useSignInStore = defineStore('signIn', {
     error: '',
     loading: false,
     userInfo: {
-      token: '',
-      userId: null,
-      username: '',
-      email: '',
+      token: String,
+      userId: number,
+      username: String,
+      email: String,
       transferCode: '',
       unreadNotifications: 0,
       coinsBalance: 0,
@@ -28,18 +29,29 @@ export const useSignInStore = defineStore('signIn', {
           password: this.password
         })
         console.log(res)
-        if (res.data.code === 200) {
-          this.userInfo = res.data.data
-          this.error = ''
-          this.loading = false
-          return res.data
-        }
+        this.userInfo.token = res.data.data.token
+        this.error = ''
+        this.loading = false
+        this.userInfo.userId=res.data.data.userId
+        this.userInfo.transferCode = res.data.data.transferCode
+        this.userInfo.unreadNotifications = res.data.data.unreadNotifications
+        alert('登录成功')
+        // 跳转到首页
+        await router.push('/app-layout')
       } catch (error) {
         this.error = error.message
         this.loading = false
         throw error
       }
     },
+    // 恢复本地存储
+    loadFromLocal() {
+      const local = localStorage.getItem('userInfo')
+      if (local) {
+        this.userInfo = JSON.parse(local)
+      }
+    },
+    // 登出时清空
     async signOut() {
       this.loading = false
       this.userInfo = {
@@ -54,6 +66,7 @@ export const useSignInStore = defineStore('signIn', {
         realNameAuth: false,
       }
       this.error = ''
+      localStorage.removeItem('userInfo')
       await router.push('/sign-in')
     }
   },

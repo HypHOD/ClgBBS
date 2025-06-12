@@ -24,7 +24,7 @@ type Message = {
 
 async function fetchMessageList() {
   try{
-    const res = await axios.get(`/notification?userId=${userId}&pageNum=$\{currentPage}&pageSize=5&unreadOnly=true`)
+    const res = await axios.get(`/api/notification?userId=${userId}`)
     if(res.data.code === 200){
       messageList.value = res.data.data.list
     }
@@ -54,6 +54,9 @@ async function markAsRead(id: number) {
 <template>
   <v-container>
     <v-row>
+      <v-col cols="2">
+        <v-btn @click="fetchMessageList">刷新</v-btn>
+      </v-col>
       <v-col v-for="(item) in messageList" :key="item.id" cols="3" @click="()=> markAsRead(item.id)">
         <v-card
             :class="{ 'dark-card': item.isRead }"

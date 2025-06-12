@@ -8,50 +8,51 @@ const router = useRouter()
 const signInStore = useSignInStore()
 
 const form = ref({
-  email: '',
+  username: '',
   password: ''
 })
 
-// const handleSubmit = async () => {
-//   try {
-//     // 表单验证
-//     if (!form.value.email || !form.value.password) {
-//       alert('请填写完整登录信息')
-//       return
-//     }
-//
-//     // 同步表单数据到Pinia store
-//     signInStore.userInfo.email = form.value.email
-//     signInStore.password = form.value.password
-//
-//     // 调用Pinia仓库中的登录方法
-//     await signInStore.signIn()
-//
-//     // 登录成功后跳转
-//     await router.push('/app-layout')
-//   } catch (error) {
-//     console.error('登录失败:', error)
-//     // 显示Pinia store中存储的错误信息
-//     alert(signInStore.error || '登录失败，请重试')
-//   }
-// }
-
-async function handleSubmit() {
-    // 同步表单数据到Pinia store
-    signInStore.userInfo.email = form.value.email
-    signInStore.password = form.value.password
-    try{
-      const res = await axios.post('/api/user/login',{username: form.value.email, password: form.value.password})
-      if(res.data.code === 200){
-        // 登录成功后跳转
-        await router.push('/app-layout')
-      }
-    }catch(err){
-      console.error(err)
-      alert('登录失败，请重试')
+const handleSubmit = async () => {
+  try {
+    // 表单验证
+    if (!form.value.username || !form.value.password) {
+      alert('请填写完整登录信息')
       return
     }
+
+    // 同步表单数据到Pinia store
+    signInStore.userInfo.username = form.value.username
+    signInStore.password = form.value.password
+
+    // 调用Pinia仓库中的登录方法
+    const res = signInStore.signIn()
+
+    // 登录成功后跳转
+    await router.push('/app-layout')
+  } catch (error) {
+    console.error('登录失败:', error)
+    // 显示Pinia store中存储的错误信息
+    alert(signInStore.error || '登录失败，请重试')
+  }
 }
+
+// async function handleSubmit() {
+//     // 同步表单数据到Pinia store
+//     signInStore.userInfo.username = form.value.username
+//     signInStore.password = form.value.password
+//     try{
+//       const res = await axios.post('/api/user/login',{username: form.value.username, password: form.value.password})
+//       if(res.data.code === 200){
+//         alert(res.data.message)
+//         // 登录成功后跳转
+//         await router.push('/app-layout')
+//       }
+//     }catch(err){
+//       console.error(err)
+//       alert('登录失败，请重试')
+//       return
+//     }
+// }
 </script>
 
 <template>
@@ -67,9 +68,9 @@ async function handleSubmit() {
       <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
 
         <div class="sm:col-span-2">
-          <label for="email" class="block text-sm font-semibold text-gray-900">邮箱地址</label>
+          <label for="email" class="block text-sm font-semibold text-gray-900">用户名</label>
           <div class="mt-2.5">
-            <input v-model="form.email" type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
+            <input v-model="form.username" type="text" name="username" id="username" autocomplete="username" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
 
@@ -79,7 +80,6 @@ async function handleSubmit() {
             <input v-model="form.password" type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" required />
           </div>
         </div>
-
       </div>
 
       <v-container>
