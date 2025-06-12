@@ -1,42 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import axios from "axios";
 import { useSignInStore } from '@/store/signIn'
+import dayjs from 'dayjs'
 
 const signInStore = useSignInStore()
-const userId = signInStore.userInfo.userId
-
-
 
 // 消息通知列表
 const messageList = ref([
-  {id: 1, type: 'comment', content: '评论了你的帖子', relatedPostId: 1, timestamp: 1626211200000, isRead: false},
-  {id: 2, type: 'comment', content: '回复了你的评论', relatedPostId: 1, timestamp: 1626211200000, isRead: true},
+  {id: 1, type: 'comment', content: '测试内容', relatedPostId: 1, timestamp: 1626211200000, isRead: false},
 ])
+
 type Message = {
   id: number
   type: string
   content: string
   relatedPostId: number
-  timestamp: number
+  timestamp: number|number[]
   isRead: boolean
 }
 
 async function fetchMessageList() {
   try{
-    const res = await axios.get(`/api/notification?userId=${userId}`)
-    if(res.data.code === 200){
-      messageList.value = res.data.data.list
-    }
+    const res = await axios.get(`/api/notification?userId=${signInStore.userInfo.userId}`)
+    alert('获取成功')
+    console.log(res.data.data.list)
+    messageList.value = res.data.data.list
   }catch(error){
+    alert('获取失败')
     console.log(error)
   }
 }
 
 async function markAsRead(id: number) {
   try{
-    const res = await ins.patch('/api/notification/mark-read',{userId: userId, notificationIds: [id]})
-    if(res.data.code === 200){
+    const res = await axios.patch('/api/notification/mark-read',{userId: signInStore.userInfo.userId, notificationIds: [id]})
+    if(1){
       messageList.value = messageList.value.map(item => {
         if(item.id === id){
           item.isRead = true
@@ -49,6 +48,19 @@ async function markAsRead(id: number) {
   }
 }
 
+const formatDate = computed(() => {
+  return (timestamp: number | number[]) => {
+    if (Array.isArray(timestamp)) {
+      // 处理数组格式的日期 [年, 月, 日, 时, 分]
+      // 注意：JavaScript的月份是从0开始的，所以需要减1
+      const date = new Date(timestamp[0], timestamp[1] - 1, timestamp[2], timestamp[3], timestamp[4])
+      return dayjs(date).format('YYYY-MM-DD HH:mm')
+    } else {
+      // 处理原来的时间戳格式
+      return dayjs(timestamp).format('YYYY-MM-DD HH:mm')
+    }
+  }
+})
 </script>
 
 <template>
@@ -75,7 +87,7 @@ async function markAsRead(id: number) {
             </v-row>
           </v-card-title>
           <v-card-text>
-            <span>#{{ item.timestamp }}</span>
+            <span># {{ formatDate(item.timestamp) }}</span>
           </v-card-text>
         </v-card>
       </v-col>
