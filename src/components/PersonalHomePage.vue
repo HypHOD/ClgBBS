@@ -28,7 +28,6 @@ const loadMorePost = () => {
 
 // 只访问自己上传的文件
 const fileList = ref([
-  { fileId: 1, fileClass: 'PDF', fileName: 'xxx小测' , filePrice: 10 },
   { fileId: 2, fileClass: 'PDF', fileName: 'xxx电子版教材' , filePrice: 20 },
   { fileId: 3, fileClass: 'ZIP', fileName: 'xxx资料包' , filePrice: 30 },
 ]);
@@ -67,19 +66,26 @@ async function deleteFile(toDeletefileId: number) {
 }
 
 const isCheckIn = ref(false)
+const userId = signInStore.userInfo.userId
 
 async function checkIn() {
+  if(signInStore.userInfo.isCheckIn){
+    alert('您已经签到过了');
+    return;
+  }
   try{
-    const res = await ins.get('/balance/checkin',{userId: signInStore.userInfo.userId})
-    alert('签到成功')
-    isCheckIn.value = true;
+    const res = await axios.get(`/api/balance/checkin?userId=${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${signInStore.userInfo.token}`
+      }
+    });
+    alert('签到成功');
+    signInStore.userInfo.isCheckIn = true;
+    console.log(res);
+    await signInStore.refreshCoins();
   }catch(error){
-    console.log('签到失败');
-    if (isCheckIn.value) {
-      alert('已签到')
-    }else {
-      alert('签到失败')
-    }
+    console.log(error);
+    alert('签到失败');
   }
 }
 
@@ -105,7 +111,7 @@ const dialog = shallowRef(false)
         </v-sheet>
       </v-row>
       <v-row>
-        <v-btn width="200" height="50" color="primary" text @click="checkIn">签到</v-btn>
+        <v-btn width="200" height="50" color="primary" text @click="checkIn" class="mx-1,mt-2,mb-2">签到</v-btn>
       </v-row>
       <v-row>
           <v-sheet border="dashed md" color="surface-light" rounded="lg" width="200" class="mx-1 h-screen mt-2" height="auto">
@@ -189,7 +195,7 @@ const dialog = shallowRef(false)
                 <v-infinite-scroll  @load="loadMorePost" :items="postList">
                   <v-container v-for="(item, index) in postList" :key="index" :item="item">
                     <v-row>
-                      <v-col>
+                      <v-col cols="10">
                         <v-sheet
                             border="dashed md"
                             color="surface-light"
@@ -243,6 +249,13 @@ const dialog = shallowRef(false)
           <v-tabs-window-item value="option-5" >
             <v-card flat>
               <v-card-text>
+                <v-card outlined class="mx-1 my-1">
+                  <v-card-title>
+                    <h3 class="headline mb-0">没写</h3>
+                  </v-card-title>
+                  <v-card-text> 没写 </v-card-text>
+                  <v-card-text> 没写 </v-card-text>
+                </v-card>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>

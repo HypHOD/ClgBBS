@@ -1,49 +1,54 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
-const UserState = reactive({
-  userlevel: "普通用户",
-  usercoin: 0,
-  uid: "123456",
-  nickname: "Default",
-  avatar: "@/assets/cdm.jpg",
-});
+import {useSignInStore} from "@/store/SignIn";
 
-const tempNickname = ref("");
-const tempAvatar = ref("");
-const isEditDialogOpen = ref(false);
-const isLoading = ref(false);
+const signInStore = useSignInStore();
+
+const username = ref(signInStore.userInfo.username);
+const userId = ref(signInStore.userInfo.userId);
+const coinBalance = ref(signInStore.userInfo.coinsBalance);
+
+// const tempNickname = ref("");
+// const tempAvatar = ref("");
+// const isEditDialogOpen = ref(false);
+// const isLoading = ref(false);
 
 // 打开编辑对话框
-const openEditDialog = () => {
-  tempNickname.value = UserState.nickname; // 初始化昵称
-  tempAvatar.value = UserState.avatar; // 初始化头像
-  isEditDialogOpen.value = true;
-};
+// const openEditDialog = () => {
+//   tempNickname.value = userInfo.nickname; // 初始化昵称
+//   tempAvatar.value = userInfo.avatar; // 初始化头像
+//   isEditDialogOpen.value = true;
+// };
 
 
 // 保存修改
 // 后端没写???
-const saveChanges = async () => {
-  isLoading.value = true; // 显示加载状态
-  try {
-    // 模拟异步请求（实际需替换为接口调用）
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+// const saveChanges = async () => {
+//   isLoading.value = true; // 显示加载状态
+//   try {
+//     // 模拟异步请求（实际需替换为接口调用）
+//     await new Promise((resolve) => setTimeout(resolve, 1500));
+//
+//     // 更新用户状态
+//     userInfo.nickname = tempNickname.value;
+//     userInfo.avatar = tempAvatar.value.startsWith('data:image')
+//         ? `http://your-api/upload/${Date.now()}.png` // 示例上传地址
+//         : tempAvatar.value;
+//     // 关闭对话框
+//     isEditDialogOpen.value = false;
+//     // 提示成功（可添加通知组件）
+//     console.log("修改成功");
+//   } catch (error) {
+//     console.error("修改失败", error);
+//   } finally {
+//     isLoading.value = false; // 结束加载
+//   }
+// };
 
-    // 更新用户状态
-    UserState.nickname = tempNickname.value;
-    UserState.avatar = tempAvatar.value.startsWith('data:image')
-        ? `http://your-api/upload/${Date.now()}.png` // 示例上传地址
-        : tempAvatar.value;
-    // 关闭对话框
-    isEditDialogOpen.value = false;
-    // 提示成功（可添加通知组件）
-    console.log("修改成功");
-  } catch (error) {
-    console.error("修改失败", error);
-  } finally {
-    isLoading.value = false; // 结束加载
-  }
-};
+// 刷新用户持有币数量
+// 在Pinia中实现
+
+// 签到获取代币
 
 </script>
 
@@ -54,11 +59,10 @@ const saveChanges = async () => {
         <div class="box">
           <span></span>
           <div class="content">
-            <h2>{{ UserState.nickname }}</h2>
-            <p>{{UserState.userlevel}}:{{UserState.uid}}</p>
-            <p>持有代币: {{UserState.usercoin}}</p>
+            <h2>{{ username }}</h2>
+            <p>UID: {{ userId }}</p>
+            <p>持有代币: {{ coinBalance }}</p>
             <a href="#" @click.prevent="openEditDialog">修改个人信息</a>
-
           </div>
         </div>
       </v-col>
@@ -67,9 +71,9 @@ const saveChanges = async () => {
           <span></span>
           <div class="content">
             <h2>活跃度</h2>
-            <p>历史发帖: {{UserState.usercoin}}.</p>
-            <p>历史回复: {{UserState.usercoin}}.</p>
-            <p>收到点赞: {{UserState.usercoin}}.</p>
+            <p>历史发帖: {{  }}.</p>
+            <p>历史回复: {{  }}.</p>
+            <p>收到点赞: {{  }}.</p>
           </div>
         </div>
       </v-col>
@@ -87,36 +91,36 @@ const saveChanges = async () => {
     </v-row>
   </v-container>
 
-  <v-dialog v-model="isEditDialogOpen" max-width="500px">
-    <template #activator="{ on }">
-      <!-- 不需要激活按钮，直接通过点击事件控制 -->
-    </template>
-    <v-card>
-      <v-card-text>
-        <!-- 昵称修改 -->
-        <v-text-field
-            label="昵称"
-            v-model="tempNickname"
-            required
-            :error="!tempNickname"
-            error-message="昵称不能为空"
-        ></v-text-field>
-        <v-text-field
-            label="密码"
-            v-model="newPassword"
-            required
-            :error="!oldPassword"
-            error-message="昵称不能为空"
-        ></v-text-field>
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn @click="isEditDialogOpen = false">取消</v-btn>
-        <v-btn color="primary" @click="saveChanges" :loading="isLoading">
-          保存
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+<!--  <v-dialog v-model="isEditDialogOpen" max-width="500px">-->
+<!--    <template #activator="{ on }">-->
+<!--      &lt;!&ndash; 不需要激活按钮，直接通过点击事件控制 &ndash;&gt;-->
+<!--    </template>-->
+<!--    <v-card>-->
+<!--      <v-card-text>-->
+<!--        &lt;!&ndash; 昵称修改 &ndash;&gt;-->
+<!--        <v-text-field-->
+<!--            label="昵称"-->
+<!--            v-model="tempNickname"-->
+<!--            required-->
+<!--            :error="!tempNickname"-->
+<!--            error-message="昵称不能为空"-->
+<!--        ></v-text-field>-->
+<!--        <v-text-field-->
+<!--            label="密码"-->
+<!--            v-model="newPassword"-->
+<!--            required-->
+<!--            :error="!oldPassword"-->
+<!--            error-message="昵称不能为空"-->
+<!--        ></v-text-field>-->
+<!--      </v-card-text>-->
+<!--      <v-card-actions class="justify-end">-->
+<!--        <v-btn @click="isEditDialogOpen = false">取消</v-btn>-->
+<!--        <v-btn color="primary" @click="saveChanges" :loading="isLoading">-->
+<!--          保存-->
+<!--        </v-btn>-->
+<!--      </v-card-actions>-->
+<!--    </v-card>-->
+<!--  </v-dialog>-->
 </template>
 
 <style scoped>

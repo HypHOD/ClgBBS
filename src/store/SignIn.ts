@@ -12,6 +12,7 @@ interface UserInfo {
   coinsBalance: number;
   isBanned: boolean;
   realNameAuth: boolean;
+  isCheckIn : boolean;
 }
 
 export const useSignInStore = defineStore('signIn', {
@@ -28,6 +29,7 @@ export const useSignInStore = defineStore('signIn', {
       coinsBalance: 0,
       isBanned: false,
       realNameAuth: false,
+      isCheckIn : false,
     }
     
     return {
@@ -38,6 +40,17 @@ export const useSignInStore = defineStore('signIn', {
     }
   },
   actions: {
+    //刷新代币数量
+    async refreshCoins() {
+      try{
+        const res = await axios.get('/api/balance/look')
+        console.log(res)
+        this.userInfo.coinsBalance = res.data.data.coinsBalance
+      }catch(err){
+        console.log(err)
+      }
+    },
+
     async signIn() {
       this.loading = true
       try {

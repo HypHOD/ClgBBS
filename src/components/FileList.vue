@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import {computed, reactive, ref} from 'vue'
 import TextTest from "./PostItem.vue";
 import FileItem from "./FileItem.vue";
 import axios from 'axios';
 import { useRouter  } from 'vue-router';
 import { useSignInStore } from '@/store/SignIn.ts';
+import dayjs from "dayjs";
 
 
 const router = useRouter();
@@ -25,12 +26,7 @@ async function getFileList() {
   }
 }
 
-// 模拟数据数组
-const fileList = ref([
-  { fileId: 1, fileClass: 'PDF', fileName: 'xxx小测' , filePrice: 10 },
-  { fileId: 2, fileClass: 'PDF', fileName: 'xxx电子版教材' , filePrice: 20 },
-  { fileId: 3, fileClass: 'ZIP', fileName: 'xxx资料包' , filePrice: 30 },
-]);
+
 
 const fileTypes = [
   'PDF',
@@ -94,6 +90,7 @@ const loadMore = async () => {
 const chips = ref(['Default'])
 // const dialog = ref(false);
 
+// 上传文件
 const fileBody = ref<null | File[]>(null);
 const fileClass=reactive({
   postId: 1001,
@@ -147,9 +144,11 @@ async function uploadFile(fileBody, fileClass) {
   }
 }
 
+// 下载文件
+
 async function downloadFile(userId, postId) {
   try {
-    const res = await ins.get(`/file/download?userId=${userId}&postId=${postId}`);
+    const res = await axios.get(`/api/file/download?userId=${userId}&postId=${postId}`);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([res.data]));
     a.download = 'download.txt';
@@ -163,9 +162,16 @@ async function downloadFile(userId, postId) {
 // 下载指定ID的文件
 const fileId = ref(null);
 
-async function downloadAFile(userId, fileId) {
+async function downloadAFile(fileId, userId) {
+
   try {
-    const res = await ins.get(`/file/download2?fileId=${fileId}&userId=${userId}`);
+    const res = await axios.get(`/api/file/download2`,{
+      data:{
+        userId:userId,
+        fileId:fileId
+      }
+    });
+    alert('下载成功');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([res.data]));
     a.download = 'download.txt';
@@ -173,9 +179,50 @@ async function downloadAFile(userId, fileId) {
     a.remove();
 
   }catch(err) {
+    alert('下载失败，请重试')
     console.error('<UNK>:', err);
   }
 }
+
+// 文件刷新
+type FileItem = {
+  id: number;
+  filePath: null|string;
+  fileName: null|string;
+  postId: number;
+  filePermission: null|number;
+  fileComment: null|string;
+  fileValue: number;
+  createTime: null|string;
+  isDelete: number;
+}
+const fileList = ref([
+  {id: 1, filePath: 'https://www.baidu.com', fileName: 'test1.txt', postId: 1001, filePermission: 1, fileComment: '测试文件1', fileValue: 10, createTime: '2022-01-01 12:00:00', isDelete: 0}
+]);
+
+async function loadFiles() {
+  try{
+    const res = await axios.get('/api/file/search')
+    console.log(res.data.data);
+    fileList.value = res.data.data;
+  }catch(err) {
+    console.error('请求出错:', err);
+  }
+}
+
+const formatDate = computed(() => {
+  return (timestamp: number | number[]) => {
+    if (Array.isArray(timestamp)) {
+      // 处理数组格式的日期 [年, 月, 日, 时, 分]
+      // 注意：JavaScript的月份是从0开始的，所以需要减1
+      const date = new Date(timestamp[0], timestamp[1] - 1, timestamp[2], timestamp[3], timestamp[4])
+      return dayjs(date).format('YYYY-MM-DD HH:mm')
+    } else {
+      // 处理原来的时间戳格式
+      return dayjs(timestamp).format('YYYY-MM-DD HH:mm')
+    }
+  }
+})
 </script>
 
 <template>
@@ -189,7 +236,6 @@ async function downloadAFile(userId, fileId) {
             v-model="fileBody"
         ></v-file-input>
       </v-col>
-
       <v-col cols="2">
         <v-btn class="bg-green mx-2" @click="dialog = true">
           <v-icon>mdi-cloud-upload</v-icon>
@@ -202,45 +248,71 @@ async function downloadAFile(userId, fileId) {
         <v-text-field label="File ID" v-model="fileId"></v-text-field>
       </v-col>
       <v-col cols="2">
-        <v-btn color="primary" @click="downloadAFile(userId, postId)">
+        <v-btn color="primary" @click="downloadAFile(fileId, userId)">
           <v-icon>mdi-cloud-download</v-icon>
           下载文件</v-btn>
       </v-col>
     </v-row>
     <v-row>
       <v-container class="bg-gray-100">
-        <v-combobox
-            v-model="chips"
-            :items="fileTypes"
-            label="条件筛选"
-            variant="solo"
-            chips
-            clearable
-            closable-chips
-            multiple
-        >
-          <template v-slot:chip="{ props, item }">
-            <v-chip v-bind="props">
-              <strong>{{ item.raw }}</strong>&nbsp;
-              <span>(默认时间倒叙)</span>
-            </v-chip>
-          </template>
-        </v-combobox>
-        <hr>
-        <v-infinite-scroll  @load="loadMore" :items="fileList" >
-          <v-container v-for="(item, index) in fileList" :key="index" :item="item">
-            <v-sheet
-                border="dashed md"
-                color="surface-light"
-                height="200"
-                rounded="lg"
-                width="100%"
-                class="hover-effect"
-                v-if="fileTypes.includes(item.fileClass)"
-                @click="downloadFile(userId, postId)"
-            ><FileItem :item="item"></FileItem></v-sheet>
-          </v-container>
-        </v-infinite-scroll>
+        <v-row>
+          <v-col>
+            <v-btn color="primary" @click="loadFiles()">
+              <v-icon>mdi-refresh</v-icon>
+              加载更多
+            </v-btn>
+          </v-col>
+        </v-row>
+        <br>
+        <v-row>
+          <v-col cols="4" v-for="(item, index) in fileList" :key="index" :item="item">
+            <v-card
+                @click="()=> downloadFile(item.id, signInStore.userInfo.userId)"
+            >
+              <v-card-title>
+                <v-row>
+                  <v-col cols="9">
+                    <span>{{ item.fileName }}</span>
+                  </v-col>
+                  <v-col cols="3" v-if="item.isDelete === 0">
+                    <v-icon color="success">mdi-check-circle</v-icon>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field label="文件描述" v-model="item.fileComment" disabled></v-text-field>
+                    <v-text-field label="文件地址" v-model="item.filePath" disabled></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-chip small>
+                      需要点数:{{ item.fileValue }}
+                    </v-chip>
+                  </v-col>
+                  <v-col>
+                    <v-chip small>PID:{{ item.postId }}</v-chip>
+                    <v-chip small>UID:{{ item.id }}</v-chip>
+                  </v-col>
+                </v-row>
+              </v-card-title>
+              <v-card-text>
+                <span># {{ formatDate(item.createTime) }}</span>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
+<!--        <v-infinite-scroll  @load="loadMore" :items="fileList" >-->
+<!--          <v-container v-for="(item, index) in fileList" :key="index" :item="item">-->
+<!--            <v-sheet-->
+<!--                border="dashed md"-->
+<!--                color="surface-light"-->
+<!--                height="200"-->
+<!--                rounded="lg"-->
+<!--                width="100%"-->
+<!--                class="hover-effect"-->
+<!--                v-if="fileTypes.includes(item.fileClass)"-->
+<!--                @click="downloadFile(userId, postId)"-->
+<!--            ><FileItem :item="item"></FileItem></v-sheet>-->
+<!--          </v-container>-->
+<!--        </v-infinite-scroll>-->
       </v-container>
     </v-row>
   </v-container>

@@ -50,25 +50,12 @@ async function uploadPost() {
 
 // 接收帖子列表数据
 async function GetPostList() {
-  // 发送请求
-  const res = await ins.get('/section/search',{
-    params:{
-      pageNum: 1,
-      pageSize: 5,
-      name: 'test'
-    }
-  }).then(
-      (response) => {
-        console.log(response.data);
-        return response.data;
-      },
-      (error) => {
-        console.log(error);
-      }
-  ).then((data) => {
-    console.log(data)
-    PostList.value = data.data.list
-  });
+  try{
+    const res = await axios.get('/api/post/search')
+    console.log(res)
+  }catch(err){
+    console.log(err)
+  }
 
 }
 
@@ -97,7 +84,6 @@ const errorMessage = ref('');
 // 模拟数据数组
 const items = ref([
   { id: 1, content: '$y=x^2$', isBlurred: false , postClassify: '1' },
-  { id: 2, content: '测试文本1', isBlurred: false , postClassify: '2' },
 ]);
 const itemsPerLoad = 3;
 const loadMore = async () => {
@@ -148,30 +134,51 @@ const GetSearchResponse = (response) => {
 const emit = defineEmits(['search-result'])
 const loaded = ref(false)
 const loading = ref(false)
-const search = ref('')
+const searchForm = ref('')
 const selectGroup = ref('')
 
-async function onClick() {
-  if (!search.value.trim()) return // 避免空搜索
-
+async function handleSearch() {
+  if (!searchForm.value.trim()) return // 避免空搜索
+  // alert('搜索中...')
   loading.value = true
   loaded.value = false
 
   try {
-    const prefix = search.value[0] || ''
-    const searchText = search.value.slice(1)
-    let response
+    const prefix = searchForm.value[0] || ''
+    const searchText = searchForm.value.slice(1)
+    console.log(prefix, searchText)
+    let res
 
     if (prefix === '!') {
-      response = await fetch(`/section/search/${searchText}`).then(res => res.json())
+      try{
+        console.log('查询分区=${searchText}')
+        res = await axios.get('/api/post/search/${searchText}')
+        console.log(res)
+      }catch(error){
+        console.log(error)
+      }
     } else if (prefix === '@') {
-      response = await fetch(`/user/search/${searchText}`).then(res => res.json())
+      try{
+        res = await axios.get('/api/user/search/${searchText}')
+        console.log(`查询UID=${searchText}`)
+        console.log(res)
+      }catch(err){
+        console.log(err)
+      }
+
     } else {
-      response = await fetch(`/post/search?keyword=${encodeURIComponent(search.value)}`).then(res => res.json())
+      try{
+        console.log('查询标题=${searchText}')
+        const res = await axios.get('/api/user/search/search?keyword=${encodeURIComponent(searchForm.value)}')
+        console.log(res)
+      }catch(error){
+        console.log(error)
+      }
     }
 
+
     // emit('search-result', response)
-    defineProps({ searchResult: response })
+    defineProps({ searchResult: res })
   } catch (error) {
 
     console.error('搜索出错:', error)
@@ -223,25 +230,6 @@ onMounted(() => {
                   ></v-textarea>
                 </v-row>
                 <v-row>
-<!--                  <v-col>-->
-<!--                    <v-combobox-->
-<!--                        v-model="chips"-->
-<!--                        :items="tips"-->
-<!--                        label="选择帖子标签"-->
-<!--                        variant="solo"-->
-<!--                        chips-->
-<!--                        clearable-->
-<!--                        closable-chips-->
-<!--                        multiple-->
-<!--                    >-->
-<!--                      <template v-slot:chip="{ props, item }">-->
-<!--                        <v-chip v-bind="props">-->
-<!--                          <strong>{{ item.raw }}</strong>&nbsp;-->
-<!--                          <span>(默认时间倒叙)</span>-->
-<!--                        </v-chip>-->
-<!--                      </template>-->
-<!--                    </v-combobox>-->
-<!--                  </v-col>-->
                   <v-col>
                     <v-select
                         v-model="groupSelect"
@@ -270,7 +258,7 @@ onMounted(() => {
                 <v-col>
                   <v-card-text>
                     <v-text-field
-                        v-model="search"
+                        v-model="searchForm"
                         :loading="loading"
                         append-inner-icon="mdi-magnify"
                         density="compact"
@@ -278,8 +266,8 @@ onMounted(() => {
                         variant="solo"
                         hide-details
                         single-line
-                        @click:append-inner="onClick"
-                        @keyup.enter="onClick"
+                        @click:append-inner="handleSearch"
+                        @keyup.enter="handleSearch"
                     ></v-text-field>
                   </v-card-text>
                 </v-col>
@@ -298,6 +286,9 @@ onMounted(() => {
       </v-row>
       <v-row>
         <v-container>
+          <v-row>
+            <v-btn color="primary" @click="GetPostList">刷新帖子</v-btn>
+          </v-row>
           <v-row justify="center">
             <v-infinite-scroll  @load="loadMoreFromHttp()" :items="items">
               <v-container v-for="(item, index) in items" :key="index" :item="item">

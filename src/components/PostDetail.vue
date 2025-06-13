@@ -1,20 +1,65 @@
 <script setup lang="ts">
 import { ref , onMounted } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 // import {fetchPostDetailById} from '@/api/post'
 import {useSignInStore} from '@/store/signIn'
+import { useStore } from 'vuex'
+import {it} from "vuetify/locale";
 
 const signInStore = useSignInStore()
 
 const router = useRouter()
+const route = useRoute()
+
+// 从路由参数获取文章ID
+const postId = route.params.uid
+
+
+// 根据postId获取楼主层信息
+const head = ref([
+  { uid: 1,postId:'123', title: 'Title', content: 'Text', likes: 0, liked: false, creatTime: '2022-01-01 12:00:00' },
+]);
+
+// 获取评论
+const comments = ref([
+  { uid: 2,postId:'123#1', content: '牛', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
+]);
+// 根据路由参数获取文章ID
+
+
+// 模拟每次加载的数据数量
+const itemsPerLoad = 3;
+
+// 加载更多数据的方法
+const loadMore = () => {
+  // 模拟异步加载数据
+  setTimeout(() => {
+    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
+      id: comments.value.length + i + 1,
+      content: `Item ${comments.value.length + i + 1}`,
+    }));
+    comments.value = [...comments.value, ...newItems];
+  }, 1000);
+};
+
+// 点赞的方法
+async function handleLike(item: any){
+  console.log(signInStore.userInfo.userId+'->点赞->'+postId)
+  try{
+    const res = await axios.get('/api/post/like',{userId: signInStore.userInfo.userId, postId: postId })
+    console.log(res)
+  }catch(err){
+    console.log(err)
+  }
+}
 
 // 打赏
 const donateDialog = ref(false)
 const donateAmount = ref(0)
-async function sendTips(userId: number, toUserId: number, amount: number){
+async function sendTips(){
   try{
-    const res = await axios.post('/api/balance/tip', { tipUserId: userId,postId: toUserId, amount: amount })
+    const res = await axios.post('/api/balance/tip')
     if(res.data.code === 1){
       alert('打赏成功')
     }
@@ -26,95 +71,22 @@ async function sendTips(userId: number, toUserId: number, amount: number){
   }
 }
 
-// 模拟数据数组
-// 楼主
-const head = ref([
-  { uid: 1,postId:'123', title: 'Title', content: 'Text', likes: 0, liked: false, creatTime: '2022-01-01 12:00:00' },
-]);
-
-// 评论
-const comments = ref([
-  { uid: 2,postId:'123#1', content: 'Text', likes: 0, liked: false , parentId: 1 , commentId:123,  creatTime: '2022-01-01 12:00:00' },
-  { uid: 3,postId:'123#2', content: 'Image', likes: 10, liked: false , parentId: 1 , commentId:456,  creatTime: '2022-01-02 12:00:00' },
-]);
-const postId = Number(router.currentRoute.value.params.id)
-
-
-// 向服务器申请对应内容
-// function fetchPostDetail(id: number) {
-//   axios.get('/api/post/' + id)
-//      .then((response) => {
-//         head.value = [response.data];
-//       })
-//      .catch((error) => {
-//         console.log(error);
-//       });
-// }
-
-
-// /api/comments?postId=:id（获取评论列表）
-// /api/post/:id（获取帖子详情）
-
-
-// 模拟每次加载的数据数量
-const itemsPerLoad = 3;
-
-// 加载更多数据的方法
-const loadMore = () => {
-  // 模拟异步加载数据
-  setTimeout(() => {
-    const newItems = Array.from({ length: itemsPerLoad }, (_, i) => ({
-      id: head.value.length + i + 1,
-      content: `Item ${head.value.length + i + 1}`,
-    }));
-    head.value = [...head.value, ...newItems];
-  }, 1000);
-};
-
-// 点赞的方法
-const handleLike = (item: any) => {
-  if (!item.liked) {
-    item.likes++;
-    item.liked = true;
-    console.log('点赞成功');
-  } else {
-    item.likes--;
-    item.liked = false;
-    console.log('取消点赞成功');
+// 举报
+const reportDialog = ref(false)
+const reportReason = ref('')
+async function handleReport(item: any){
+  console.log(signInStore.userInfo.userId+'->举报->'+postId+'->'+reportReason.value)
+  try{
+    const res = await axios.post('api/post/report',{userId: signInStore.userInfo.userId, postId: postId, reportMessage: reportReason.value})
+    console.log(res)
+    alert('举报成功')
+    reportDialog.value = false
+  }catch(err){
+    console.log(err)
+    alert('举报失败')
+    reportDialog.value = false
   }
-
-  // 向服务器发送点赞数量
-  axios.post('/comments/${postId}/like', { id: item.id, likes: item.likes })
-      .then(() => {
-        alert('点赞数量刷新成功');
-        console.log('点赞数量刷新成功');
-      })
-      .catch(() => {
-        alert('点赞数量刷新失败');
-        console.log('点赞数量刷新失败');
-      });
-};
-
-// 举报的方法
-const handleReport = () => {
-  console.log('举报');
-  // 举报内容
-  const report = prompt('请输入举报内容');
-  if (report) {
-    console.log('举报成功');
-  }
-  // 向服务器发送举报内容
-  axios.post('/comments/${postId}/dislike')
-      .then(() => {
-        alert('举报成功');
-        console.log('举报成功');
-      })
-      .catch(() => {
-        alert('举报失败');
-        console.log('举报失败');
-      });
-};
-
+}
 // 回复相关的变量和方法
 const replyDialog = ref(false);
 const currentReplyTarget = ref(null);
@@ -151,6 +123,15 @@ const submitComment = () => {
     replyDialog.value = false;
   }
 };
+
+onMounted(  () => {
+  // 获取文章详情
+  // fetchPostDetailById(postId).then(res => {
+  //   head.value = [res.data.data];
+  //   comments.value = res.data.data.comments;
+  // });
+  console.log('postId:'+postId);
+})
 </script>
 
 <template>
@@ -209,7 +190,7 @@ const submitComment = () => {
                 打赏
               </v-btn>
 
-              <v-btn class="bg-black hover-effect" @click="handleReport">
+              <v-btn class="bg-black hover-effect" @click="reportDialog = true">
                 <v-icon>mdi-flag</v-icon>
                 举报
               </v-btn>
@@ -235,7 +216,7 @@ const submitComment = () => {
   <v-infinite-scroll @load="loadMore" :items="head" class="mt-4">
     <v-sheet border="dashed md" color="surface-light" height="auto" rounded="lg" width="auto" class="mx-1 mt-0">
       <!-- Comments -->
-      <v-container v-for="(item_file, index) in comments" :key="index" :item="item_file">
+      <v-container v-for="(item, index) in comments" :key="index" :item="item">
         <v-row>
           <!-- 评论头像 -->
           <v-col cols="2">
@@ -247,15 +228,9 @@ const submitComment = () => {
                 width="100%"
             >
               <img src="@/assets/comment1.png" alt="个人头像" class="rounded-lg w-full h-full object-cover " @click="$router.push('/profile')">
-              <v-chip
-                  color="primary"
-                  label
-              >UID:{{ comments[index].uid }}</v-chip>
             </v-sheet>
           </v-col>
-
           <v-col cols="10">
-
             <v-row>
               <v-col cols="8" class="bg-blue">
                 <v-sheet
@@ -267,7 +242,6 @@ const submitComment = () => {
                     class="hover-effect flex-column"
                     @click=""
                 >
-
                   <v-sheet
                       border="dashed md"
                       color="surface-light"
@@ -276,7 +250,7 @@ const submitComment = () => {
                       width="50%"
                       class="hover-effect mx-1 mt-1"
                   >
-                    {{ item_file.content }}
+                    {{ item.content }}
                   </v-sheet>
                   <v-sheet
                       border="dashed md"
@@ -285,25 +259,24 @@ const submitComment = () => {
                       rounded="lg"
                       width="auto"
                       class="hover-effect mx-1 mt-1 flex"
-
                   >
                     <!-- 点赞 举报 -->
                     <v-card-actions>
-                      <v-btn class="bg-red hover-effect" @click="handleLike(item_file)">
-                        <v-icon v-if="item_file.liked">mdi-heart</v-icon>
-                        <v-icon v-if="!item_file.liked">mdi-heart-outline</v-icon>
+                      <v-btn class="bg-red hover-effect" @click="handleLike(item)">
+                        <v-icon v-if="item.liked">mdi-heart</v-icon>
+                        <v-icon v-if="!item.liked">mdi-heart-outline</v-icon>
                         点赞
                         <!-- 点赞数量 -->
                         <v-chip
                             color="primary"
                             label
-                        >{{ item_file.likes }}</v-chip>
+                        >{{ item.likes }}</v-chip>
                       </v-btn>
                       <v-btn class="bg-green hover-effect" @click="">
                         <v-icon>mdi-currency-usd</v-icon>
                         打赏
                       </v-btn>
-                      <v-btn class="bg-black hover-effect" @click="handleReport">
+                      <v-btn class="bg-black hover-effect" @click="handleReport(item)">
                         <v-icon>mdi-flag</v-icon>
                         举报
                       </v-btn>
@@ -322,15 +295,12 @@ const submitComment = () => {
                     @click=""
                 >
 
-                  <v-sheet
-                      border="dashed md"
-                      color="surface-light"
-                      height="100"
-                      rounded="lg"
-                      width="auto"
-                      class="hover-effect mx-1 mt-1 flex-column"
-                  >
                     <!-- 状态栏 -->
+                    <v-chip
+                        color="primary"
+                        label
+                        class="mt-1 mx-1"
+                    >评论UID:{{ item.uid }}</v-chip>
                     <v-chip
                         color="primary"
                         label
@@ -345,18 +315,7 @@ const submitComment = () => {
                         color="primary"
                         label
                         class="mt-1 mx-1"
-                    >发布时间:{{ comments[index].creatTime }}</v-chip>
-                  </v-sheet>
-                  <v-sheet
-                      border="dashed md"
-                      color="surface-light"
-                      height="auto"
-                      rounded="lg"
-                      width="auto"
-                      class="hover-effect mx-1 mt-1"
-                  >
-                    操作栏
-                  </v-sheet>
+                    >发布时间:{{ item.creatTime }}</v-chip>
                 </v-sheet>
               </v-col>
             </v-row>
@@ -395,8 +354,23 @@ const submitComment = () => {
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="sendTips(signInStore.userInfo.userId, postId, donateAmount)">提交</v-btn>
+        <v-btn color="blue darken-1" text @click="sendTips()">提交</v-btn>
         <v-btn color="grey darken-1" text @click="donateDialog = false">取消</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!--举报对话框-->
+  <v-dialog v-model="reportDialog" max-width="500px">
+    <v-card>
+      <v-card-title>举报</v-card-title>
+      <v-card-text>
+        <v-textarea v-model="reportReason" label="请输入举报原因"></v-textarea>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="handleReport">提交</v-btn>
+        <v-btn color="grey darken-1" text @click="reportDialog = false">取消</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

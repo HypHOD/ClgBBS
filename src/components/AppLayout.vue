@@ -90,14 +90,12 @@ const logout = () => {
           <v-tabs-window-item value="File">
             <FileList></FileList>
           </v-tabs-window-item>
-
         </v-tabs-window>
       </v-container>
     </v-main>
   </v-layout>
 
 </template>
-
 <style scoped>
 .hover-effect:hover {
   background-color: #e0f7fa; /* Light blue background on hover */
